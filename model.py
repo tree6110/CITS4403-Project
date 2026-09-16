@@ -35,10 +35,8 @@ class Dwelling:
 # Class for households.
 class Household:
     def __init__(self):
-        # Use pareto distribution to model income.
-        # Most people have around base income, a small amount have way more (long tail).
-        # self.income = BASE_INCOME * np.random.pareto(2.5)
-        self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=0.5)
+        # Use lognormal distribution to model income.
+        self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=1)
         self.money = 2 * self.income
         self.occupying = None
         self.owns = []
@@ -183,6 +181,12 @@ def stepAndPlot(nSteps: int):
         housesOwned = [len(x.owns) for x in householdGrid]
         c.set_title("Houses Owned")
         c.hist(housesOwned, density=True, log=True)
+
+        # Plot histogram of household money.
+        e.clear()
+        householdMoney = [x.money for x in householdGrid]
+        e.set_title("Money")
+        e.hist(householdMoney, density=True, log=True)
 
         # Plot historical data.
         d.clear()
