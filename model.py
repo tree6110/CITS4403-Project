@@ -89,10 +89,9 @@ def purchase(household: Household, dwelling: Dwelling):
         household.occupying.occupant = None
         dwelling.occupant = household
         household.occupying = dwelling
-
     # If new house is nicer, occupy it instead.
 
-    # Otherwise, put new house up for rent.
+    # Otherwise, new house goes up for rent.
 
 def tick():
     # Give all households more money according to their income.
@@ -104,10 +103,13 @@ def tick():
             x.money -= x.occupying.rentPrice
 
         # Purchase house if household can afford one.
-        # Can purchase up to 3 per tick.
+        # Can purchase up to 3 per tick, stop trying to purchace once unsuccessful.
         for i in range(3):
             bestPurchaseOption = findHouseToPurchase(x)
-            if bestPurchaseOption: purchase(x, bestPurchaseOption)
+            if bestPurchaseOption:
+                purchase(x, bestPurchaseOption)
+            else:
+                break
         # Try to rent if not living anywhere.
         if not x.occupying:
             bestRentOption = findHouseToRent(x)
@@ -117,35 +119,56 @@ def tick():
                 x.occupying = bestRentOption
 
 
-
-
 def stepAndPlot(nSteps: int):
+    historicalUnoccupied = []
+    historicalRented = []
+    historicalOwnerOccupied = []
+
     qualityGrid = list(map(lambda x: x.quality, housingGrid))
     qualityGridShaped = (np.array(qualityGrid)).reshape(GRID_LENGTH, GRID_WIDTH)
     fig = plt.figure(figsize=(12, 7), constrained_layout=True)
     a = plt.subplot2grid((3,5), (0,0), rowspan = 3, colspan=3, fig=fig)
     b = plt.subplot2grid((3,5), (0,3), colspan=2, fig=fig)
+    c = plt.subplot2grid((3,5), (1,3), colspan=2, fig=fig)
+    d = plt.subplot2grid((3,5), (2,3), colspan=2, fig=fig)
 
     incomes = list(map(lambda x: x.income, householdGrid))
+    b.set_title("Income")
     b.hist(incomes, 100, density=True, log=True)
 
     for i in range(nSteps):
-        a.clear()
-        # Plot quality background (needs improvement...).
-        a.axis([0, GRID_LENGTH, 0, GRID_WIDTH])
-        a.imshow(qualityGridShaped)
         unoccupiedCoords = list(map(lambda x: x.coord, getUnoccupiedDwellings()))
         ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings()))
         rentedCoords = list(map(lambda x: x.coord, getRentedDwellings()))
-        if unoccupiedCoords:
-            xs, ys = zip(*unoccupiedCoords)
-            a.plot(xs, ys, 'o', color='red')[0]
-        if ownedCoords:
-            xs, ys = zip(*ownedCoords)
-            a.plot(xs, ys, 'o', color='blue')[0]
-        if rentedCoords:
-            xs, ys = zip(*rentedCoords)
-            a.plot(xs, ys, 'o', color='orange')[0]
+
+        # Save historical data.
+        historicalUnoccupied.append(len(unoccupiedCoords))
+        historicalRented.append(len(rentedCoords))
+        historicalOwnerOccupied.append(len(ownedCoords))
+
+        a.clear()
+        a.axis([0, GRID_LENGTH, 0, GRID_WIDTH])
+        a.imshow(qualityGridShaped)
+        xs, ys = zip(*unoccupiedCoords) if unoccupiedCoords else ([], [])
+        a.plot(xs, ys, "o", color="red", label=f"Unoccupied ({len(unoccupiedCoords)})")[0]
+        xs, ys = zip(*ownedCoords) if ownedCoords else ([], [])
+        a.plot(xs, ys, "o", color="blue", label=f"Owner Occupied ({len(ownedCoords)})")[0]
+        xs, ys = zip(*rentedCoords) if rentedCoords else ([], [])
+        a.plot(xs, ys, "o", color="orange", label=f"Rented ({len(rentedCoords)})")[0]
+        a.legend(loc='upper left', bbox_to_anchor=(1.02, 0.5), frameon=False)
+
+        # Plot histogram of houses owned.
+        c.clear()
+        housesOwned = [len(x.owns) for x in householdGrid]
+        c.set_title("Houses Owned")
+        c.hist(housesOwned, density=True, log=True)
+
+        # Plot historical data.
+        d.clear()
+        d.set_title("Distribution over time")
+        d.plot(historicalUnoccupied, color="red")
+        d.plot(historicalRented, color="orange")
+        d.plot(historicalOwnerOccupied, color="blue")
 
         plt.savefig(f"./step{i}")
         tick()
@@ -161,4 +184,4 @@ for i in range(GRID_LENGTH):
 for i in range(round(0.95*GRID_WIDTH*GRID_LENGTH)):
     householdGrid.append(Household())
 
-stepAndPlot(20)
+stepAndPlot(30)
