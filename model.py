@@ -10,13 +10,13 @@ GRID_LENGTH = 50
 GRID_WIDTH = 50
 
 # Household constants.
-BASE_INCOME = 80000
+AVERAGE_INCOME = 80000
 MAX_INCOME = 5000000
 
 # Market constants.
 # Average rent per year.
-AVERAGE_HOUSE_PRICE = 1000000
-AVERAGE_RENT = 0.2*AVERAGE_HOUSE_PRICE
+AVERAGE_HOUSE_PRICE = 800000
+AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
 
 # Global lists.
 housingGrid: list[Dwelling] = []
@@ -37,8 +37,9 @@ class Household:
     def __init__(self):
         # Use pareto distribution to model income.
         # Most people have around base income, a small amount have way more (long tail).
-        self.income = BASE_INCOME + np.random.pareto(0.3)
-        self.money = 0
+        # self.income = BASE_INCOME * np.random.pareto(2.5)
+        self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=0.5)
+        self.money = 2 * self.income
         self.occupying = None
         self.owns = []
 
@@ -73,7 +74,7 @@ def findHouseToPurchase(household: Household) -> Dwelling | None:
 
 # Search available houses for the one with the highest quality that can be rented.
 def findHouseToRent(household: Household):
-    canRent = list(filter(lambda x: not x.occupant and x.owner and  x.salePrice <= household.money, housingGrid))
+    canRent = list(filter(lambda x: not x.occupant and x.owner and  x.rentPrice <= household.money, housingGrid))
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
 def purchase(household: Household, dwelling: Dwelling):
@@ -90,10 +91,28 @@ def purchase(household: Household, dwelling: Dwelling):
         dwelling.occupant = household
         household.occupying = dwelling
     # If new house is nicer, occupy it instead.
-
+    elif dwelling.quality > household.occupying.quality:
+        dwelling.occupant = household
+        household.occupying.occupant = None
+        household.occupying = dwelling
     # Otherwise, new house goes up for rent.
 
 def tick():
+    # Force some households to exit the market before buying/renting commences.
+    for x in householdGrid.copy():
+    # Chance to exit market.
+        if np.random.rand() < 0.1:
+            # Move out of occupied home.
+            if x.occupying: x.occupying.occupant = None
+            # Return all owned houses to the market and kick all occupants.
+            for house in x.owns:
+                house.owner = None
+                if house.occupant: house.occupant.occupying = None
+                house.occupant = None
+            # Remove self from household list and instantiate new household to replace.
+            householdGrid.remove(x)
+            householdGrid.append(Household())
+
     # Give all households more money according to their income.
     for x in householdGrid:
         x.money += x.income
@@ -110,6 +129,7 @@ def tick():
                 purchase(x, bestPurchaseOption)
             else:
                 break
+
         # Try to rent if not living anywhere.
         if not x.occupying:
             bestRentOption = findHouseToRent(x)
@@ -126,12 +146,13 @@ def stepAndPlot(nSteps: int):
 
     qualityGrid = list(map(lambda x: x.quality, housingGrid))
     qualityGridShaped = (np.array(qualityGrid)).reshape(GRID_LENGTH, GRID_WIDTH)
-    fig = plt.figure(figsize=(12, 7), constrained_layout=True)
-    a = plt.subplot2grid((3,5), (0,0), rowspan = 3, colspan=3, fig=fig)
-    b = plt.subplot2grid((3,5), (0,3), colspan=2, fig=fig)
-    c = plt.subplot2grid((3,5), (1,3), colspan=2, fig=fig)
-    d = plt.subplot2grid((3,5), (2,3), colspan=2, fig=fig)
-
+    fig = plt.figure(figsize=(20, 7), constrained_layout=True)
+    a = plt.subplot2grid((3,7), (0,0), rowspan = 3, colspan=3, fig=fig)
+    b = plt.subplot2grid((3,7), (0,3), colspan=2, fig=fig)
+    c = plt.subplot2grid((3,7), (1,3), colspan=2, fig=fig)
+    d = plt.subplot2grid((3,7), (2,3), colspan=2, fig=fig)
+    e = plt.subplot2grid((3,7), (0,5), colspan=2, fig=fig)
+    
     incomes = list(map(lambda x: x.income, householdGrid))
     b.set_title("Income")
     b.hist(incomes, 100, density=True, log=True)
@@ -184,4 +205,4 @@ for i in range(GRID_LENGTH):
 for i in range(round(0.95*GRID_WIDTH*GRID_LENGTH)):
     householdGrid.append(Household())
 
-stepAndPlot(30)
+stepAndPlot(50)
