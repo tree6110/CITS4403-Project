@@ -10,7 +10,8 @@ GRID_LENGTH = 50
 GRID_WIDTH = 50
 
 # Household constants.
-AVERAGE_INCOME = 50000
+BASE_INCOME = 80000
+MAX_INCOME = 5000000
 
 # Market constants.
 # Average rent per year.
@@ -34,9 +35,9 @@ class Dwelling:
 # Class for households.
 class Household:
     def __init__(self):
-        # self.income = np.random.uniform(MIN_INCOME, MAX_INCOME)
-        # self.income = AVERAGE_INCOME + np.random.pareto(0.1)
-        self.income = AVERAGE_INCOME + np.random.pareto(0.075)
+        # Use pareto distribution to model income.
+        # Most people have around base income, a small amount have way more (long tail).
+        self.income = BASE_INCOME + np.random.pareto(0.3)
         self.money = 0
         self.occupying = None
         self.owns = []
@@ -51,7 +52,7 @@ def getDwellingQuality(dwellingCoord : tuple[int, int]) -> np.float64:
     minDist = min([getDistBetween(dwellingCoord, p) for p in MAX_QUALITY_POINTS])
     # Split into quality bins.
     bins = np.array([0.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0])
-    return max(bins) - np.digitize(minDist, bins)
+    return max(bins) - np.digitize(minDist, bins) + 1
 
 # Find all dwellings for sale.
 def getUnoccupiedDwellings() -> list[Dwelling]:
@@ -63,7 +64,7 @@ def getOwnedDwellings() -> list[Dwelling]:
 
 # Find all dwellings lived in by renters.
 def getRentedDwellings() -> list[Dwelling]:
-    return list(filter(lambda x: x.occupant and x.owner and  x.occupant != x.owner, housingGrid))
+    return list(filter(lambda x: x.occupant and x.owner and x.occupant != x.owner, housingGrid))
 
 # Search available houses for the one with the highest quality that can be purchased.
 def findHouseToPurchase(household: Household) -> Dwelling | None:
@@ -77,14 +78,21 @@ def findHouseToRent(household: Household):
 
 def purchase(household: Household, dwelling: Dwelling):
     household.money = household.money - dwelling.salePrice
-    household.owns.append(Dwelling)
+    household.owns.append(dwelling)
     dwelling.owner = household
     # If homeless, move into purchased house.
     if not household.occupying:
         dwelling.occupant = household
         household.occupying = dwelling
-    # Otherwise, put new house up for rent.
+    # If renting, move into purchased house.
+    elif household.occupying not in household.owns:
+        household.occupying.occupant = None
+        dwelling.occupant = household
+        household.occupying = dwelling
 
+    # If new house is nicer, occupy it instead.
+
+    # Otherwise, put new house up for rent.
 
 def tick():
     # Give all households more money according to their income.
@@ -96,8 +104,10 @@ def tick():
             x.money -= x.occupying.rentPrice
 
         # Purchase house if household can afford one.
-        bestPurchaseOption = findHouseToPurchase(x)
-        if bestPurchaseOption: purchase(x, bestPurchaseOption)
+        # Can purchase up to 3 per tick.
+        for i in range(3):
+            bestPurchaseOption = findHouseToPurchase(x)
+            if bestPurchaseOption: purchase(x, bestPurchaseOption)
         # Try to rent if not living anywhere.
         if not x.occupying:
             bestRentOption = findHouseToRent(x)
@@ -105,30 +115,38 @@ def tick():
             if bestRentOption:
                 bestRentOption.occupant = x
                 x.occupying = bestRentOption
-                
-        
+
+
+
 
 def stepAndPlot(nSteps: int):
     qualityGrid = list(map(lambda x: x.quality, housingGrid))
     qualityGridShaped = (np.array(qualityGrid)).reshape(GRID_LENGTH, GRID_WIDTH)
+    fig = plt.figure(figsize=(12, 7), constrained_layout=True)
+    a = plt.subplot2grid((3,5), (0,0), rowspan = 3, colspan=3, fig=fig)
+    b = plt.subplot2grid((3,5), (0,3), colspan=2, fig=fig)
+
+    incomes = list(map(lambda x: x.income, householdGrid))
+    b.hist(incomes, 100, density=True, log=True)
+
     for i in range(nSteps):
+        a.clear()
         # Plot quality background (needs improvement...).
-        plt.axis([0, GRID_LENGTH, 0, GRID_WIDTH])
-        plt.imshow(qualityGridShaped)
-        # Plot unoccupied dwellings.
+        a.axis([0, GRID_LENGTH, 0, GRID_WIDTH])
+        a.imshow(qualityGridShaped)
         unoccupiedCoords = list(map(lambda x: x.coord, getUnoccupiedDwellings()))
+        ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings()))
+        rentedCoords = list(map(lambda x: x.coord, getRentedDwellings()))
         if unoccupiedCoords:
             xs, ys = zip(*unoccupiedCoords)
-            plt.plot(xs, ys, '.', color='red')[0]
-        ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings()))
+            a.plot(xs, ys, 'o', color='red')[0]
         if ownedCoords:
-            ys, xs = zip(*ownedCoords)
-            plt.plot(xs, ys, '.', color='blue')[0]
-        rentedCoords = list(map(lambda x: x.coord, getRentedDwellings()))
+            xs, ys = zip(*ownedCoords)
+            a.plot(xs, ys, 'o', color='blue')[0]
         if rentedCoords:
-            ys, xs = zip(*rentedCoords)
-            plt.plot(xs, ys, '.', color='orange')[0]
-        # Plot 
+            xs, ys = zip(*rentedCoords)
+            a.plot(xs, ys, 'o', color='orange')[0]
+
         plt.savefig(f"./step{i}")
         tick()
 
