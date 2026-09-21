@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import Any
+from utils.helpers import getDwellingQuality, findHouseToRent, findHouseToPurchase, getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings
 
 # Co-ordinates of points of maximum house quality
 MAX_QUALITY_POINTS = [(25,25), (15, 15)]
@@ -40,40 +41,6 @@ class Household:
         self.money = 2 * self.income
         self.occupying = None
         self.owns = []
-
-# Find the distance between two points.
-def getDistBetween(p1 : tuple[int, int], p2 : tuple[int, int]) -> np.floating[Any]:
-    return np.linalg.norm(np.array(p1) - np.array(p2))
-
-# Find the quality of a dwelling.
-def getDwellingQuality(dwellingCoord : tuple[int, int]) -> np.float64:
-    # Consider only proximity to closest max quality point.
-    minDist = min([getDistBetween(dwellingCoord, p) for p in MAX_QUALITY_POINTS])
-    # Split into quality bins.
-    bins = np.array([0.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0])
-    return max(bins) - np.digitize(minDist, bins) + 1
-
-# Find all dwellings for sale.
-def getUnoccupiedDwellings() -> list[Dwelling]:
-    return list(filter(lambda x: x.occupant == None, housingGrid))
-
-# Find all dwellings lived in by the owner.
-def getOwnedDwellings() -> list[Dwelling]:
-    return list(filter(lambda x: x.owner and x.occupant and x.occupant == x.owner, housingGrid))
-
-# Find all dwellings lived in by renters.
-def getRentedDwellings() -> list[Dwelling]:
-    return list(filter(lambda x: x.occupant and x.owner and x.occupant != x.owner, housingGrid))
-
-# Search available houses for the one with the highest quality that can be purchased.
-def findHouseToPurchase(household: Household) -> Dwelling | None:
-    canPurchase = list(filter(lambda x: x.owner == None and x.salePrice <= household.money, housingGrid))
-    return sorted(canPurchase, key=lambda x: (-x.quality, x.salePrice))[0] if len(canPurchase) > 0 else None
-
-# Search available houses for the one with the highest quality that can be rented.
-def findHouseToRent(household: Household):
-    canRent = list(filter(lambda x: not x.occupant and x.owner and  x.rentPrice <= household.money, housingGrid))
-    return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
 def purchase(household: Household, dwelling: Dwelling):
     household.money = household.money - dwelling.salePrice
@@ -122,7 +89,7 @@ def tick():
         # Purchase house if household can afford one.
         # Can purchase up to 3 per tick, stop trying to purchace once unsuccessful.
         for i in range(3):
-            bestPurchaseOption = findHouseToPurchase(x)
+            bestPurchaseOption = findHouseToPurchase(x, housingGrid)
             if bestPurchaseOption:
                 purchase(x, bestPurchaseOption)
             else:
@@ -130,7 +97,7 @@ def tick():
 
         # Try to rent if not living anywhere.
         if not x.occupying:
-            bestRentOption = findHouseToRent(x)
+            bestRentOption = findHouseToRent(x, housingGrid)
             # TODO: fn
             if bestRentOption:
                 bestRentOption.occupant = x
@@ -156,9 +123,9 @@ def stepAndPlot(nSteps: int):
     b.hist(incomes, 100, density=True, log=True)
 
     for i in range(nSteps):
-        unoccupiedCoords = list(map(lambda x: x.coord, getUnoccupiedDwellings()))
-        ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings()))
-        rentedCoords = list(map(lambda x: x.coord, getRentedDwellings()))
+        unoccupiedCoords = list(map(lambda x: x.coord, getUnoccupiedDwellings(housingGrid)))
+        ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings(housingGrid)))
+        rentedCoords = list(map(lambda x: x.coord, getRentedDwellings(housingGrid)))
 
         # Save historical data.
         historicalUnoccupied.append(len(unoccupiedCoords))
