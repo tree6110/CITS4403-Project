@@ -22,11 +22,6 @@ class Household:
         self.occupying = None
         self.owns = []
 
-# class marketState:
-#     def __init__(prevState: marketState):
-#         self.dwellingG
-
-
 ################# Functions for initialisation of objects #####################
 
 # Find the distance between two points.

@@ -22,12 +22,12 @@ def findHouseToPurchase(allDwellings: list[Dwelling], household: Household) -> D
 
 
 # Search available houses for the one with the highest quality that can be rented.
-def findHouseToRent(allDwellings: list[Dwelling], household: Household):
+def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwelling | None:
     canRent = list(filter(lambda x: not x.occupant and x.owner and  x.rentPrice <= household.money, allDwellings))
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
 
-def purchase(household: Household, dwelling: Dwelling):
+def purchase(household: Household, dwelling: Dwelling) -> None:
     household.money = household.money - dwelling.salePrice
     household.owns.append(dwelling)
     dwelling.owner = household

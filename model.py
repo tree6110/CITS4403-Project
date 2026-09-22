@@ -6,7 +6,7 @@ from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwelling
 from copy import deepcopy
 
 # TODO: write in a more object-oriented way with a class for each step that stores dwelling and household lists.
-def tick(dwellings: list[Dwelling], households: list[Household]):
+def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[Dwelling], list[Household]]:
     # Force some households to exit the market before buying/renting commences.
     for x in households.copy():
     # Chance to exit market.
@@ -48,10 +48,11 @@ def tick(dwellings: list[Dwelling], households: list[Household]):
                 x.occupying = bestRentOption
 
     # Return tuple containing modified lists.
-    return (dwellings, households)
+    return dwellings, households
 
 
-def runSimulation(nSteps: int):
+def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household]]]:
+    steps = []
     # Initialise empty dwellings and households.
     currDwellings: list[Dwelling] = []
     currHouseholds: list[Household] = []
@@ -60,17 +61,14 @@ def runSimulation(nSteps: int):
             currDwellings.append(Dwelling((i,j)))
     for i in range(round(0.95*GRID_WIDTH*GRID_LENGTH)):
         currHouseholds.append(Household())
-    
-    steps = []
 
     for i in range(nSteps):
         steps.append((deepcopy(currDwellings), deepcopy(currHouseholds)))
         tick(currDwellings, currHouseholds)
-
     return steps
 
 
-def graphSimulation(steps):
+def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None:
     
     historicalUnoccupied = []
     historicalRented = []
@@ -86,9 +84,6 @@ def graphSimulation(steps):
     e = plt.subplot2grid((3,7), (0,5), colspan=2, fig=fig)
 
     for i, (dwellings, households) in enumerate(steps):
-        print(i)
-        print(len(getUnoccupiedDwellings(dwellings)))
-
         b.clear()
         incomes = list(map(lambda x: x.income, households))
         b.set_title("Income")
@@ -135,9 +130,8 @@ def graphSimulation(steps):
 
         plt.savefig(f"./step{i}")
 
-def main():
+def main() -> None:
     steps = runSimulation(10)
-    print([len(getUnoccupiedDwellings(x[0])) for x in steps])
     graphSimulation(steps)
 
 main()
