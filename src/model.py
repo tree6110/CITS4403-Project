@@ -19,6 +19,11 @@ MAX_INCOME = 5000000
 AVERAGE_HOUSE_PRICE = 800000
 AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
 
+# Banking constants
+baseInterestRate = 0.05
+loanPeriod = 30 #average loan period to pay it back
+deposit = 0.2
+
 # Global lists.
 housingGrid: list[Dwelling] = []
 householdGrid: list[Household] = []
@@ -41,11 +46,77 @@ class Household:
         self.money = 2 * self.income
         self.occupying = None
         self.owns = []
+        self.mortgages = [] #Tracks which house has a mortgage (if own multiple)
+
+# Class for Banks
+class Bank:
+    def __init__(self):
+        self.interestRate = baseInterestRate
+        self.activeMortgages = []
+
+    #To randomly change the interest rate over the years, similar to a cost of living index
+    def updateInterestRate(self):
+        self.interestRate += np.random.normal(0, 0.005)
+
+        if self.interestRate < 0.01:
+            self.interestRate = 0.01
+        elif self.interestRate > 0.2:
+            self.interestRate = 0.2
+
+bigBank = Bank()
+
+class Mortgage:
+    def __init__(self, borrower: Household, dwelling: Dwelling, loanAmount: float, interestRate: float):
+        self.borrower = borrower
+        self.dwelling = dwelling
+        self.loanAmount = loanAmount
+        self.interestRate = interestRate
+
+    def annualPayment(self):
+        return (self.loanAmount / loanPeriod) + (self.loanAmount * (1-deposit))
+
 
 def purchase(household: Household, dwelling: Dwelling):
-    household.money = household.money - dwelling.salePrice
+    #Checks if a house is already mortgaged
+    for mort in bigBank.activeMortgages:
+        if mort.dwelling == dwelling:
+            return 
+
+    requiredDeposit = dwelling.salePrice * deposit
+
+    hasCash = household.money >= dwelling.salePrice
+    hasDeposit = household.money >= requiredDeposit
+
+    # Checks to see if a household can leverage an existing property in order to buy a new one (if needed)
+    leveragedHouse = None
+    if not hasDeposit:
+        mortgagedDwellings = {m.dwelling for m in household.mortgages}
+        for ownedHouse in household.owns:
+            if ownedHouse not in mortgagedDwellings:
+                leveragedHouse = ownedHouse
+                break
+
+    if hasCash:
+        household.money -= dwelling.salePrice
+    elif hasDeposit:
+        household.money -= requiredDeposit
+        loanAmount = dwelling.salePrice - requiredDeposit
+        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
+        bigBank.activeMortgages.append(newMortgage)
+        household.mortgages.append(newMortgage)
+    elif leveragedHouse is not None:
+        loanAmount = dwelling.salePrice - requiredDeposit
+        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
+        bigBank.activeMortgages.append(newMortgage)
+        household.mortgages.append(newMortgage)
+    else:
+        #Cannot afford regardless
+        return
+
+    #Update owners & occupancy
     household.owns.append(dwelling)
     dwelling.owner = household
+
     # If homeless, move into purchased house.
     if not household.occupying:
         dwelling.occupant = household
@@ -63,28 +134,45 @@ def purchase(household: Household, dwelling: Dwelling):
     # Otherwise, new house goes up for rent.
 
 def tick():
+
+    #Update the interest rates
+    bigBank.updateInterestRate()
+
     # Force some households to exit the market before buying/renting commences.
     for x in householdGrid.copy():
     # Chance to exit market.
         if np.random.rand() < 0.1:
             # Move out of occupied home.
-            if x.occupying: x.occupying.occupant = None
+            if x.occupying: 
+                x.occupying.occupant = None
+
+            #Clear any mortgages associated with exiting households
+            bigBank.activeMortgages = [m for m in bigBank.activeMortgages if m.borrower != x]
+
             # Return all owned houses to the market and kick all occupants.
             for house in x.owns:
                 house.owner = None
-                if house.occupant: house.occupant.occupying = None
+                if house.occupant: 
+                    house.occupant.occupying = None
                 house.occupant = None
             # Remove self from household list and instantiate new household to replace.
             householdGrid.remove(x)
             householdGrid.append(Household())
 
-    # Give all households more money according to their income.
+
+    #Process payments and income for households
     for x in householdGrid:
         x.money += x.income
-        # If renting, pay rent.
+
+        for mort in x.mortgages:
+            payment = mort.annualPayment()
+            x.money -= payment
+
+        #If renting, pay rent
         if x.occupying and x.occupying.owner != x:
-            x.occupying.owner.money += x.occupying.rentPrice
-            x.money -= x.occupying.rentPrice
+            if x.occupying.owner:
+                x.occupying.owner.money += x.occupying.rentPrice
+                x.money -= x.occupying.rentPrice
 
         # Purchase house if household can afford one.
         # Can purchase up to 3 per tick, stop trying to purchace once unsuccessful.
