@@ -1,4 +1,4 @@
-from classes import Dwelling, Household
+from classes import Dwelling, Household, Bank, Mortgage
 
 # Find all dwellings for sale.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
@@ -28,18 +28,58 @@ def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwell
 
 
 def purchase(household: Household, dwelling: Dwelling) -> None:
-    household.money = household.money - dwelling.salePrice
+    #Checks if a house is already mortgaged
+    for mort in bigBank.activeMortgages:
+        if mort.dwelling == dwelling:
+            return 
+
+    requiredDeposit = dwelling.salePrice * deposit
+
+    hasCash = household.money >= dwelling.salePrice
+    hasDeposit = household.money >= requiredDeposit
+
+    # Checks to see if a household can leverage an existing property in order to buy a new one (if needed)
+    leveragedHouse = None
+    if not hasDeposit:
+        mortgagedDwellings = {m.dwelling for m in household.mortgages}
+        for ownedHouse in household.owns:
+            if ownedHouse not in mortgagedDwellings:
+                leveragedHouse = ownedHouse
+                break
+
+    if hasCash:
+        household.money -= dwelling.salePrice
+    elif hasDeposit:
+        household.money -= requiredDeposit
+        loanAmount = dwelling.salePrice - requiredDeposit
+        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
+        bigBank.activeMortgages.append(newMortgage)
+        household.mortgages.append(newMortgage)
+    elif leveragedHouse is not None:
+        loanAmount = dwelling.salePrice - requiredDeposit
+        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
+        bigBank.activeMortgages.append(newMortgage)
+        household.mortgages.append(newMortgage)
+    else:
+        #Cannot afford regardless
+        return
+
+
+    # Update owners & occupancy
     household.owns.append(dwelling)
     dwelling.owner = household
+
     # If homeless, move into purchased house.
     if not household.occupying:
         dwelling.occupant = household
         household.occupying = dwelling
+
     # If renting, move into purchased house.
     elif household.occupying not in household.owns:
         household.occupying.occupant = None
         dwelling.occupant = household
         household.occupying = dwelling
+        
     # If new house is nicer, occupy it instead.
     elif dwelling.quality > household.occupying.quality:
         dwelling.occupant = household

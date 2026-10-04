@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Any
-from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS
+from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, baseInterestRate, loanPeriod, deposit
+
 
 # Class for houses.
 class Dwelling:
@@ -21,6 +22,32 @@ class Household:
         self.money = 2 * self.income
         self.occupying = None
         self.owns = []
+
+# Class for Banks
+class Bank:
+    def __init__(self):
+        self.interestRate = baseInterestRate
+        self.activeMortgages = []
+
+    #To randomly change the interest rate over the years, similar to a cost of living index
+    def updateInterestRate(self):
+        self.interestRate += np.random.normal(0, 0.005)
+
+        if self.interestRate < 0.01:
+            self.interestRate = 0.01
+        elif self.interestRate > 0.2:
+            self.interestRate = 0.2
+
+# Class for Mortgages
+class Mortgage:
+    def __init__(self, borrower: Household, dwelling: Dwelling, loanAmount: float, interestRate: float):
+        self.borrower = borrower
+        self.dwelling = dwelling
+        self.loanAmount = loanAmount
+        self.interestRate = interestRate
+
+    def annualPayment(self):
+        return (self.loanAmount / loanPeriod) + (self.loanAmount * (1-deposit))
 
 ################# Functions for initialisation of objects #####################
 
