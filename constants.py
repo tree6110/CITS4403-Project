@@ -13,6 +13,6 @@ AVERAGE_HOUSE_PRICE = 800000
 AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
 
 ################## Banking constants #####################
-baseInterestRate = 0.05
-loanPeriod = 30 #average loan period to pay it back
-deposit = 0.2
+BASE_INTEREST_RATE = 0.05
+LOAN_PERIOD = 30 #average loan period to pay it back
+DEPOSIT = 0.2
