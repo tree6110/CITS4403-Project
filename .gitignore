@@ -1,2 +1,4 @@
 # Ignore picture output of 
 *.png
+.DS_Store
+**/__pycache__/
