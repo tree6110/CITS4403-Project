@@ -1,18 +1,30 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from classes import Dwelling, Household
+from classes import Dwelling, Household, Bank, Mortgage
 from constants import GRID_WIDTH, GRID_LENGTH
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase
 from copy import deepcopy
 
+#tbh idk where to put this
+bigBank = Bank() 
+
 # TODO: write in a more object-oriented way with a class for each step that stores dwelling and household lists.
 def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[Dwelling], list[Household]]:
+    
+    # Update the interest rates
+    bigBank.updateInterestRate()
+
     # Force some households to exit the market before buying/renting commences.
     for x in households.copy():
     # Chance to exit market.
         if np.random.rand() < 0.1:
             # Move out of occupied home.
             if x.occupying: x.occupying.occupant = None
+
+            #Clear any mortgages associated with exiting houses
+            bigBank.activeMortgages = [m for m in bigBank.activeMortgages if m.borrower != x]
+
+
             # Return all owned houses to the market and kick all occupants.
             for house in x.owns:
                 house.owner = None
@@ -22,9 +34,14 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
             households.remove(x)
             households.append(Household())
 
-    # Give all households more money according to their income.
+    # Give all households more money according to their income & process any mortgage payments.
     for x in households:
         x.money += x.income
+
+        for mort in x.mortgages:
+            payment = mort.annualPayment()
+            x.money -= payment
+
         # If renting, pay rent.
         if x.occupying and x.occupying.owner != x:
             x.occupying.owner.money += x.occupying.rentPrice
