@@ -1,5 +1,4 @@
-from model import bigBank
-from classes import Dwelling, Household, Mortgage
+from classes import Dwelling, Household, Mortgage, Bank
 from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
 
 # Find all dwellings for sale.
@@ -28,6 +27,7 @@ def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwell
     canRent = list(filter(lambda x: not x.occupant and x.owner and  x.rentPrice <= household.money, allDwellings))
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
+
 # Changes house prices based on interest rates
 def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> None:
     rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
@@ -35,8 +35,9 @@ def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> 
         d.salePrice *= rate 
         d.rentPrice = d.salePrice * RENT_PORTION_OF_PRICE
 
+
 # Determines if a household wants to sell
-def determineSale(household: Household) -> None:
+def determineSale(household: Household) -> list[Dwelling]:
     housesToSell = []
 
     for house in household.owns.copy():
@@ -49,12 +50,11 @@ def determineSale(household: Household) -> None:
 
         if (isInvestment and madeProfit) or isBroke:
             housesToSell.append(house)
+        
+    return(housesToSell)
 
-    for house in housesToSell:
-        sell(house)
 
-
-def sell(dwelling: Dwelling) -> None:
+def sell(dwelling: Dwelling, bank: Bank) -> None:
     # Check dwelling has an owner.
     if dwelling.owner:
         owner = dwelling.owner
@@ -62,8 +62,8 @@ def sell(dwelling: Dwelling) -> None:
         mortgageRemoved = next((m for m in owner.mortgages if m.dwelling == dwelling), None)
         if mortgageRemoved:
             owner.mortgages.remove(mortgageRemoved)
-            if mortgageRemoved in bigBank.activeMortgages:
-                bigBank.activeMortgages.remove(mortgageRemoved)
+            if mortgageRemoved in bank.activeMortgages:
+                bank.activeMortgages.remove(mortgageRemoved)
             proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
             owner.money += max(0, proceeds) # Incase household still owes money
         else:
@@ -80,11 +80,10 @@ def sell(dwelling: Dwelling) -> None:
             dwelling.occupant = None
 
 
-def purchase(household: Household, dwelling: Dwelling) -> None:
-    from model import bigBank
+def purchase(household: Household, dwelling: Dwelling, bank: Bank) -> None:
     
     # Checks if a house is already mortgaged
-    for mort in bigBank.activeMortgages:
+    for mort in bank.activeMortgages:
         if mort.dwelling == dwelling:
             return 
 
@@ -107,13 +106,13 @@ def purchase(household: Household, dwelling: Dwelling) -> None:
     elif hasDeposit:
         household.money -= requiredDeposit
         loanAmount = dwelling.salePrice - requiredDeposit
-        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
-        bigBank.activeMortgages.append(newMortgage)
+        newMortgage = Mortgage(household, dwelling, loanAmount, bank.interestRate)
+        bank.activeMortgages.append(newMortgage)
         household.mortgages.append(newMortgage)
     elif leveragedHouse is not None:
         loanAmount = dwelling.salePrice
-        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
-        bigBank.activeMortgages.append(newMortgage)
+        newMortgage = Mortgage(household, dwelling, loanAmount, bank.interestRate)
+        bank.activeMortgages.append(newMortgage)
         household.mortgages.append(newMortgage)
     else:
         #Cannot afford regardless

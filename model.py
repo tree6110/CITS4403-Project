@@ -5,16 +5,15 @@ from constants import GRID_WIDTH, GRID_LENGTH, PROFIT_MARGIN
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, sell, updateHousePrices, determineSale
 from copy import deepcopy
 
-#tbh idk where to put this
-bigBank = Bank() 
+
 
 # TODO: write in a more object-oriented way with a class for each step that stores dwelling and household lists.
-def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[Dwelling], list[Household]]:
+def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> tuple[list[Dwelling], list[Household], Bank]:
     
     # Update the interest rates
-    bigBank.updateInterestRate()
+    bank.updateInterestRate()
     # Update the housing prices
-    updateHousePrices(dwellings, bigBank.interestRate)
+    updateHousePrices(dwellings, bank.interestRate)
 
     # Force some households to exit the market before buying/renting commences.
     for x in households.copy():
@@ -24,7 +23,7 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
             if x.occupying: x.occupying.occupant = None
 
             #Clear any mortgages associated with exiting houses
-            bigBank.activeMortgages = [m for m in bigBank.activeMortgages if m.borrower != x]
+            bank.activeMortgages = [m for m in bank.activeMortgages if m.borrower != x]
 
             # Return all owned houses to the market and kick all occupants.
             for house in x.owns:
@@ -35,10 +34,9 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
             households.remove(x)
             households.append(Household())
 
-    # Give all households more money according to their income & process any mortgage payments.
+    # Process income, mortgage payments, and rent, then allow households to sell dwellings.
     for x in households:
         x.money += x.income
-
         for mort in x.mortgages:
             payment = mort.annualPayment()
             x.money -= payment
@@ -48,15 +46,16 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
             x.occupying.owner.money += x.occupying.rentPrice
             x.money -= x.occupying.rentPrice
 
-        # Determine if households want to sell houses
-        determineSale(x)
-
-        # Purchase house if household can afford one.
+        # Determine if households want to sell houses. Selling of rented houses may make renters homeless.
+        for dwelling in determineSale(x): sell(dwelling, bank)
+    
+    # Allow households to purchase dwellings if they can afford one.
+    for x in households:
         # Can purchase up to 3 per tick, stop trying to purchase once unsuccessful.
         for i in range(3):
             bestPurchaseOption = findHouseToPurchase(dwellings, x)
             if bestPurchaseOption:
-                purchase(x, bestPurchaseOption)
+                purchase(x, bestPurchaseOption, bank)
             else:
                 break
 
@@ -69,14 +68,16 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
                 x.occupying = bestRentOption
 
     # Return tuple containing modified lists.
-    return dwellings, households
+    return dwellings, households, bank
 
 
-def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household]]]:
+def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household], Bank]]:
     steps = []
     # Initialise empty dwellings and households.
     currDwellings: list[Dwelling] = []
     currHouseholds: list[Household] = []
+    # Initialise bank.
+    bigBank = Bank() 
     for i in range(GRID_LENGTH):
         for j in range(GRID_WIDTH):
             currDwellings.append(Dwelling((i,j)))
@@ -84,12 +85,12 @@ def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household]]]:
         currHouseholds.append(Household())
 
     for i in range(nSteps):
-        steps.append((deepcopy(currDwellings), deepcopy(currHouseholds)))
-        tick(currDwellings, currHouseholds)
+        steps.append((deepcopy(currDwellings), deepcopy(currHouseholds), deepcopy(bigBank)))
+        tick(currDwellings, currHouseholds, bigBank)
     return steps
 
 
-def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None:
+def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -> None:
     
     historicalUnoccupied = []
     historicalRented = []
@@ -104,7 +105,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
     d = plt.subplot2grid((3,7), (2,3), colspan=2, fig=fig)
     e = plt.subplot2grid((3,7), (0,5), colspan=2, fig=fig)
 
-    for i, (dwellings, households) in enumerate(steps):
+    for i, (dwellings, households, _bank) in enumerate(steps):
         b.clear()
         incomes = list(map(lambda x: x.income, households))
         b.set_title("Income")
@@ -152,7 +153,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
         plt.savefig(f"./step{i}")
 
 def main() -> None:
-    steps = runSimulation(10)
+    steps = runSimulation(50)
     graphSimulation(steps)
 
 main()
