@@ -47,6 +47,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
             x.money -= x.occupying.rentPrice
 
         # Determine if households want to sell houses. Selling of rented houses may make renters homeless.
+        # if len(determineSale(x)) > 0: print(len(determineSale(x)))
         for dwelling in determineSale(x): sell(dwelling, bank)
     
     # Allow households to purchase dwellings if they can afford one.
@@ -58,11 +59,11 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
                 purchase(x, bestPurchaseOption, bank)
             else:
                 break
-
-        # Try to rent if not living anywhere.
+    
+    # Allow households to rent an unoccupied house owned by someone else if they are not living anywhere else.
+    for x in households:
         if not x.occupying:
             bestRentOption = findHouseToRent(dwellings, x)
-            # TODO: fn
             if bestRentOption:
                 bestRentOption.occupant = x
                 x.occupying = bestRentOption
@@ -95,6 +96,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
     historicalUnoccupied = []
     historicalRented = []
     historicalOwnerOccupied = []
+    historicalAvgHousePrice = []
 
     qualityGrid = list(map(lambda x: x.quality, steps[0][0]))
     qualityGridShaped = (np.array(qualityGrid)).reshape(GRID_LENGTH, GRID_WIDTH)
@@ -104,6 +106,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
     c = plt.subplot2grid((3,7), (1,3), colspan=2, fig=fig)
     d = plt.subplot2grid((3,7), (2,3), colspan=2, fig=fig)
     e = plt.subplot2grid((3,7), (0,5), colspan=2, fig=fig)
+    f = plt.subplot2grid((3,7), (1,5), colspan=2, fig=fig)
 
     for i, (dwellings, households, _bank) in enumerate(steps):
         b.clear()
@@ -111,7 +114,9 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         b.set_title("Income")
         b.hist(incomes, 100, density=True, log=True)
 
-        unoccupiedCoords = list(map(lambda x: x.coord, getUnoccupiedDwellings(dwellings)))
+        unoccupiedDwellings = getUnoccupiedDwellings(dwellings)
+
+        unoccupiedCoords = list(map(lambda x: x.coord, unoccupiedDwellings))
         ownedCoords = list(map(lambda x: x.coord, getOwnedDwellings(dwellings)))
         rentedCoords = list(map(lambda x: x.coord, getRentedDwellings(dwellings)))
 
@@ -119,6 +124,8 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         historicalUnoccupied.append(len(unoccupiedCoords))
         historicalRented.append(len(rentedCoords))
         historicalOwnerOccupied.append(len(ownedCoords))
+        unoccupiedForSale = [x for x in unoccupiedDwellings if x.owner is None]
+        historicalAvgHousePrice.append(sum(x.salePrice for x in unoccupiedForSale)/len(unoccupiedForSale))
     
         a.clear()
         a.axis([0, GRID_LENGTH, 0, GRID_WIDTH])
@@ -149,6 +156,10 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         d.plot(historicalUnoccupied, color="red")
         d.plot(historicalRented, color="orange")
         d.plot(historicalOwnerOccupied, color="blue")
+
+        f.clear()
+        f.set_title("Average house price over time")
+        f.plot(historicalAvgHousePrice, color="red")
 
         plt.savefig(f"./step{i}")
 
