@@ -61,7 +61,7 @@ def sell(household: Household, dwelling: Dwelling) -> None:
     if mortgageRemoved:
         household.mortgages.remove(mortgageRemoved)
         if mortgageRemoved in bigBank.activeMortgages:
-            bigBang.activeMortgages.remove(mortgageRemoved)
+            bigBank.activeMortgages.remove(mortgageRemoved)
         proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
         household.money += max(0, proceeds) #incase household still owes money
     else:
@@ -72,10 +72,10 @@ def sell(household: Household, dwelling: Dwelling) -> None:
         household.owns.remove(dwelling)
     dwelling.owner = None
 
-    #If household was occupying the house, they become homeless
-    if household.occupying == dwelling:
-        household.occupying = None
-        dwelling.occupant = None 
+    #Those living in the house now become homeless
+    if dwelling.occupant:
+        dwelling.occupant.occupying = None
+        dwelling.occupant = None
 
 def purchase(household: Household, dwelling: Dwelling) -> None:
     from model import bigBank
