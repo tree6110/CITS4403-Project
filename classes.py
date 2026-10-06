@@ -49,7 +49,7 @@ class Mortgage:
         self.interestRate = interestRate
 
     def annualPayment(self):
-        return (self.loanAmount / LOAN_PERIOD) + (self.loanAmount * (1-DEPOSIT))
+        return (self.loanAmount / LOAN_PERIOD) + (self.loanAmount * self.interestRate)
 
 ################# Functions for initialisation of objects #####################
 

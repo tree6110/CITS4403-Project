@@ -67,7 +67,6 @@ def purchase(household: Household, dwelling: Dwelling) -> None:
         #Cannot afford regardless
         return
 
-
     # Update owners & occupancy
     household.owns.append(dwelling)
     dwelling.owner = household
