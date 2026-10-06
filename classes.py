@@ -64,5 +64,4 @@ def getDwellingQuality(dwellingCoord : tuple[int, int]) -> np.float64:
     minDist = min([getDistBetween(dwellingCoord, p) for p in MAX_QUALITY_POINTS])
     # Split into quality bins.
     bins = np.array([0.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0])
-    # print(len(bins) - np.digitize(minDist, bins))
     return len(bins) - np.digitize(minDist, bins) + 1

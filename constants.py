@@ -10,7 +10,7 @@ MAX_INCOME = 5000000
 
 ################# Market constants #####################
 # Average rent per year.
-AVERAGE_HOUSE_PRICE = 600000
+AVERAGE_HOUSE_PRICE = 800000
 AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
 
 ################## Banking constants #####################
