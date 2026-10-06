@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_WIDTH, GRID_LENGTH
-from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase
+from constants import GRID_WIDTH, GRID_LENGTH, PROFIT_MARGIN
+from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, sell, updateHousePrices, determineSale
 from copy import deepcopy
 
 #tbh idk where to put this
@@ -13,6 +13,9 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
     
     # Update the interest rates
     bigBank.updateInterestRate()
+
+    # Update the housing prices
+    updateHousePrices(dwellings, bigBank.interestRate)
 
     # Force some households to exit the market before buying/renting commences.
     for x in households.copy():
@@ -46,6 +49,9 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
         if x.occupying and x.occupying.owner != x:
             x.occupying.owner.money += x.occupying.rentPrice
             x.money -= x.occupying.rentPrice
+
+        # Determine if households want to sell houses
+        determineSale(x, dwellings)
 
         # Purchase house if household can afford one.
         # Can purchase up to 3 per tick, stop trying to purchace once unsuccessful.

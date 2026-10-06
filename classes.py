@@ -12,6 +12,7 @@ class Dwelling:
         self.owner : Household | None = None
         self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5)
         self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5)
+        self.purchasePrice = self.salePrice 
 
 
 # Class for households.

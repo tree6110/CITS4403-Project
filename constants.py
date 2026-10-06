@@ -11,6 +11,7 @@ MAX_INCOME = 5000000
 # Average rent per year.
 AVERAGE_HOUSE_PRICE = 800000
 AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
+PROFIT_MARGIN = 1.5 #Buyer's want to sell once house gains 50% of original value
 
 ################## Banking constants #####################
 BASE_INTEREST_RATE = 0.05

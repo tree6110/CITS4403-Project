@@ -1,5 +1,5 @@
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import DEPOSIT
+from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN
 
 # Find all dwellings for sale.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
@@ -27,6 +27,55 @@ def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwell
     canRent = list(filter(lambda x: not x.occupant and x.owner and  x.rentPrice <= household.money, allDwellings))
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
+# Changes house prices based on interest rates
+def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> None:
+    rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
+    for d in dwellings:
+        d.salePrice *= rate 
+        d.rentPrice = d.salePrice * 0.05 #Same ratio as in constants.py
+
+# Determines if a household wants to sell
+def determineSale(household: Household, dwellings: list[Dwelling]) -> None:
+    housesToSell = []
+
+    for house in household.owns.copy():
+        #Investment house price is greater than 50% of purchase price
+        isInvestment = household.occupying != house
+        madeProfit = house.salePrice >= (house.purchasePrice * PROFIT_MARGIN)
+
+        #Household can't afford mortgage payments
+        isBroke = household.money < sum(m.annualPayment() for m in household.mortgages) #in case a household has multiple mortgages
+
+        if (isInvestment and madeProfit) or isBroke:
+            housesToSell.append(house)
+
+    for house in housesToSell:
+        sell(household, house)
+
+
+def sell(household: Household, dwelling: Dwelling) -> None:
+    from model import bigBank
+
+    #Find & clear associated mortgages
+    mortgageRemoved = next((m for m in household.mortgages if m.dwelling == dwelling), None)
+    if mortgageRemoved:
+        household.mortgages.remove(mortgageRemoved)
+        if mortgageRemoved in bigBank.activeMortgages:
+            bigBang.activeMortgages.remove(mortgageRemoved)
+        proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
+        household.money += max(0, proceeds) #incase household still owes money
+    else:
+        household.money += dwelling.salePrice
+
+    #Remove owners
+    if dwelling in household.owns:
+        household.owns.remove(dwelling)
+    dwelling.owner = None
+
+    #If household was occupying the house, they become homeless
+    if household.occupying == dwelling:
+        household.occupying = None
+        dwelling.occupant = None 
 
 def purchase(household: Household, dwelling: Dwelling) -> None:
     from model import bigBank
@@ -66,6 +115,9 @@ def purchase(household: Household, dwelling: Dwelling) -> None:
     else:
         #Cannot afford regardless
         return
+
+    #Record purchase price for selling profit calculations
+    dwelling.purchasePrice = dwelling.salePrice
 
     # Update owners & occupancy
     household.owns.append(dwelling)
