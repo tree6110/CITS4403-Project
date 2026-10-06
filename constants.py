@@ -1,8 +1,8 @@
 ################# Grid characteristics #####################
-MAX_QUALITY_POINTS = [(25,25), (15, 15), (20, 20)]
-# Must be a square because everything is infested with bugs.
-GRID_HEIGHT = 50
-GRID_WIDTH = 50
+GRID_DIM = 50 # Length of sides of grid.
+# Simulate high quality areas around Peppermint Grove, Nedlands, Perth CBD.
+# Somewhat reflects property prices/crime rates/proximity to river and sea.
+MAX_QUALITY_POINTS = [(5,17), (5,22), (12, 22), (17, 23), (20, 27)]
 QUALITY_PRICE_INFLUENCE = 1.2 # Factor by which price increases with each quality level
 
 ################# Household constants #####################

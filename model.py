@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_WIDTH, GRID_HEIGHT
+from constants import GRID_DIM
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase
 from copy import deepcopy
 from imageHandling import getNonDwellingCoords
@@ -69,14 +69,15 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
 
 
 def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household]]]:
-    NO_HOUSE_COORDS = getNonDwellingCoords()
-    numHouses = GRID_WIDTH*GRID_HEIGHT - len(NO_HOUSE_COORDS)
+    # Calculate coordinates that are water and will not have a dwelling placed on them.
+    NO_HOUSE_COORDS = getNonDwellingCoords('data/map.png')
+    numHouses = GRID_DIM*GRID_DIM - len(NO_HOUSE_COORDS)
     steps = []
     # Initialise empty dwellings and households.
     currDwellings: list[Dwelling] = []
     currHouseholds: list[Household] = []
-    for i in range(GRID_WIDTH):
-        for j in range(GRID_HEIGHT):
+    for i in range(GRID_DIM):
+        for j in range(GRID_DIM):
             if (i,j) not in NO_HOUSE_COORDS: 
                 currDwellings.append(Dwelling((i,j)))
 
@@ -89,9 +90,11 @@ def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household]]]:
     return steps
 
 def reconstructQualityGrid(dwellings: list[Dwelling]):
-    mapTiles = np.zeros((GRID_WIDTH, GRID_HEIGHT))
+    # Adds back in spaces that do not have a dwelling corresponding to them and gets quality for all spaces.
+    mapTiles = np.zeros((GRID_DIM, GRID_DIM))
     for dwelling in dwellings:
         i, j = dwelling.coord
+        # I have no idea why I need to reverse this here but it seems to work and I want to move on...
         mapTiles[j, i] = dwelling.quality
             
     return mapTiles
@@ -102,8 +105,6 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
     historicalRented = []
     historicalOwnerOccupied = []
 
-    # qualityGrid = list(map(lambda x: x.quality, steps[0][0]))
-    # qualityGridShaped = (np.array(qualityGrid)).reshape(GRID_LENGTH, GRID_WIDTH)
     qualityGrid = reconstructQualityGrid(steps[0][0])
     fig = plt.figure(figsize=(20, 7), constrained_layout=True)
     a = plt.subplot2grid((3,7), (0,0), rowspan = 3, colspan=3, fig=fig)
@@ -128,14 +129,14 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
         historicalOwnerOccupied.append(len(ownedCoords))
     
         a.clear()
-        a.axis([0, GRID_HEIGHT, 0, GRID_WIDTH])
+        a.axis([0, GRID_DIM, 0, GRID_DIM])
         a.imshow(qualityGrid)
         xs, ys = zip(*unoccupiedCoords) if unoccupiedCoords else ([], [])
-        a.plot(xs, ys, "o", color="red", label=f"Unoccupied ({len(unoccupiedCoords)})")[0]
+        a.plot(xs, ys, "o", color="red", label=f"Unoccupied ({len(unoccupiedCoords)})")
         xs, ys = zip(*ownedCoords) if ownedCoords else ([], [])
-        a.plot(xs, ys, "o", color="blue", label=f"Owner Occupied ({len(ownedCoords)})")[0]
+        a.plot(xs, ys, "o", color="blue", label=f"Owner Occupied ({len(ownedCoords)})")
         xs, ys = zip(*rentedCoords) if rentedCoords else ([], [])
-        a.plot(xs, ys, "o", color="orange", label=f"Rented ({len(rentedCoords)})")[0]
+        a.plot(xs, ys, "o", color="orange", label=f"Rented ({len(rentedCoords)})")
         a.legend(loc='upper left', bbox_to_anchor=(1.02, 0.5), frameon=False)
 
         # Plot histogram of houses owned.
@@ -160,7 +161,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
         plt.savefig(f"./step{i}")
 
 def main() -> None:
-    steps = runSimulation(10)
+    steps = runSimulation(5)
     graphSimulation(steps)
 
 if __name__ == "__main__":
