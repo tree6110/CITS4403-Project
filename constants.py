@@ -12,3 +12,8 @@ MAX_INCOME = 5000000
 # Average rent per year.
 AVERAGE_HOUSE_PRICE = 600000
 AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
+
+################## Banking constants #####################
+BASE_INTEREST_RATE = 0.05
+LOAN_PERIOD = 30 #average loan period to pay it back
+DEPOSIT = 0.2
