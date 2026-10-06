@@ -13,7 +13,6 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
     
     # Update the interest rates
     bigBank.updateInterestRate()
-
     # Update the housing prices
     updateHousePrices(dwellings, bigBank.interestRate)
 
@@ -26,7 +25,6 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
 
             #Clear any mortgages associated with exiting houses
             bigBank.activeMortgages = [m for m in bigBank.activeMortgages if m.borrower != x]
-
 
             # Return all owned houses to the market and kick all occupants.
             for house in x.owns:
@@ -51,10 +49,10 @@ def tick(dwellings: list[Dwelling], households: list[Household]) -> tuple[list[D
             x.money -= x.occupying.rentPrice
 
         # Determine if households want to sell houses
-        determineSale(x, dwellings)
+        determineSale(x)
 
         # Purchase house if household can afford one.
-        # Can purchase up to 3 per tick, stop trying to purchace once unsuccessful.
+        # Can purchase up to 3 per tick, stop trying to purchase once unsuccessful.
         for i in range(3):
             bestPurchaseOption = findHouseToPurchase(dwellings, x)
             if bestPurchaseOption:

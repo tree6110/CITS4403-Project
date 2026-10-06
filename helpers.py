@@ -1,5 +1,6 @@
-from classes import Dwelling, Household, Bank, Mortgage
-from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN
+from model import bigBank
+from classes import Dwelling, Household, Mortgage
+from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
 
 # Find all dwellings for sale.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
@@ -32,14 +33,14 @@ def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> 
     rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
     for d in dwellings:
         d.salePrice *= rate 
-        d.rentPrice = d.salePrice * 0.05 #Same ratio as in constants.py
+        d.rentPrice = d.salePrice * RENT_PORTION_OF_PRICE
 
 # Determines if a household wants to sell
-def determineSale(household: Household, dwellings: list[Dwelling]) -> None:
+def determineSale(household: Household) -> None:
     housesToSell = []
 
     for house in household.owns.copy():
-        #Investment house price is greater than 50% of purchase price
+        # Investment house price is greater than 50% of purchase price
         isInvestment = household.occupying != house
         madeProfit = house.salePrice >= (house.purchasePrice * PROFIT_MARGIN)
 
@@ -50,37 +51,39 @@ def determineSale(household: Household, dwellings: list[Dwelling]) -> None:
             housesToSell.append(house)
 
     for house in housesToSell:
-        sell(household, house)
+        sell(house)
 
 
-def sell(household: Household, dwelling: Dwelling) -> None:
-    from model import bigBank
+def sell(dwelling: Dwelling) -> None:
+    # Check dwelling has an owner.
+    if dwelling.owner:
+        owner = dwelling.owner
+        # Find & clear associated mortgages.
+        mortgageRemoved = next((m for m in owner.mortgages if m.dwelling == dwelling), None)
+        if mortgageRemoved:
+            owner.mortgages.remove(mortgageRemoved)
+            if mortgageRemoved in bigBank.activeMortgages:
+                bigBank.activeMortgages.remove(mortgageRemoved)
+            proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
+            owner.money += max(0, proceeds) # Incase household still owes money
+        else:
+            owner.money += dwelling.salePrice
 
-    #Find & clear associated mortgages
-    mortgageRemoved = next((m for m in household.mortgages if m.dwelling == dwelling), None)
-    if mortgageRemoved:
-        household.mortgages.remove(mortgageRemoved)
-        if mortgageRemoved in bigBank.activeMortgages:
-            bigBank.activeMortgages.remove(mortgageRemoved)
-        proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
-        household.money += max(0, proceeds) #incase household still owes money
-    else:
-        household.money += dwelling.salePrice
+        # Remove owners.
+        if dwelling in owner.owns:
+            owner.owns.remove(dwelling)
+        dwelling.owner = None
 
-    #Remove owners
-    if dwelling in household.owns:
-        household.owns.remove(dwelling)
-    dwelling.owner = None
+        # Those living in the house now become homeless.
+        if dwelling.occupant:
+            dwelling.occupant.occupying = None
+            dwelling.occupant = None
 
-    #Those living in the house now become homeless
-    if dwelling.occupant:
-        dwelling.occupant.occupying = None
-        dwelling.occupant = None
 
 def purchase(household: Household, dwelling: Dwelling) -> None:
     from model import bigBank
     
-    #Checks if a house is already mortgaged
+    # Checks if a house is already mortgaged
     for mort in bigBank.activeMortgages:
         if mort.dwelling == dwelling:
             return 

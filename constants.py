@@ -11,10 +11,12 @@ MAX_INCOME = 5000000
 ################# Market constants #####################
 # Average rent per year.
 AVERAGE_HOUSE_PRICE = 800000
-AVERAGE_RENT = 0.05*AVERAGE_HOUSE_PRICE
-PROFIT_MARGIN = 1.5 #Buyer's want to sell once house gains 50% of original value
+RENT_PORTION_OF_PRICE = 0.05
+AVERAGE_RENT = RENT_PORTION_OF_PRICE*AVERAGE_HOUSE_PRICE
+PROFIT_MARGIN = 1.5 # Buyer's want to sell once house gains 50% of original value
+
 
 ################## Banking constants #####################
 BASE_INTEREST_RATE = 0.05
-LOAN_PERIOD = 30 #average loan period to pay it back
+LOAN_PERIOD = 30 # Average loan period to pay it back
 DEPOSIT = 0.2
