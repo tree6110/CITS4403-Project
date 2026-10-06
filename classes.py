@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Any
-from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, DEPOSIT
+from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, DEPOSIT, QUALITY_PRICE_INFLUENCE
 
 
 # Class for houses.
@@ -10,8 +10,8 @@ class Dwelling:
         self.quality = getDwellingQuality(coord)
         self.occupant : Household | None = None
         self.owner : Household | None = None
-        self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5)
-        self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5)
+        self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
+        self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
 
 
 # Class for households.
@@ -64,4 +64,4 @@ def getDwellingQuality(dwellingCoord : tuple[int, int]) -> np.float64:
     minDist = min([getDistBetween(dwellingCoord, p) for p in MAX_QUALITY_POINTS])
     # Split into quality bins.
     bins = np.array([0.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0])
-    return max(bins) - np.digitize(minDist, bins) + 1
+    return len(bins) - np.digitize(minDist, bins) + 1
