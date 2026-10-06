@@ -1,7 +1,7 @@
 from classes import Dwelling, Household, Mortgage, Bank
 from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
 
-# Find all dwellings for sale.
+# Find all unoccupied dwellings.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
     return list(filter(lambda x: x.occupant == None, allDwellings))
 
@@ -16,9 +16,14 @@ def getRentedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
     return list(filter(lambda x: x.occupant and x.owner and x.occupant != x.owner, allDwellings))
 
 
+# Find all dwellings the owners have listed as for sale.
+def getOnMarketDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
+    return list(filter(lambda x: x.isOnMarket, allDwellings))
+
+
 # Search available houses for the one with the highest quality that can be purchased.
 def findHouseToPurchase(allDwellings: list[Dwelling], household: Household) -> Dwelling | None:
-    canPurchase = list(filter(lambda x: x.owner == None and x.salePrice <= household.money, allDwellings))
+    canPurchase = list(filter(lambda x: x.isOnMarket and x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money, allDwellings))
     return sorted(canPurchase, key=lambda x: (-x.quality, x.salePrice))[0] if len(canPurchase) > 0 else None
 
 
@@ -28,7 +33,7 @@ def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwell
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
 
-# Changes house prices based on interest rates
+# Changes house prices based on interest rates.
 def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> None:
     rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
     for d in dwellings:
@@ -36,7 +41,7 @@ def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> 
         d.rentPrice = d.salePrice * RENT_PORTION_OF_PRICE
 
 
-# Determines if a household wants to sell
+# Determines if a household wants to sell.
 def determineSale(household: Household) -> list[Dwelling]:
     housesToSell = []
 
@@ -54,24 +59,36 @@ def determineSale(household: Household) -> list[Dwelling]:
     return(housesToSell)
 
 
-def sell(dwelling: Dwelling, bank: Bank) -> None:
-    # Check dwelling has an owner.
+def putOnMarket(dwellings: list[Dwelling]) -> None:
+    for dwelling in dwellings:
+        dwelling.isOnMarket = True
+
+
+def adjustMarketPrices(household: Household) -> None:
+    # If this house was already on the market and didn't sell, adjust it's price down by 10%
+    for dwelling in household.owns:
+        if dwelling.isOnMarket:
+            dwelling.salePrice = dwelling.salePrice * 0.9
+
+
+def releaseFromOldOwner(dwelling: Dwelling, bank: Bank) -> None:
+    # If dwelling has an existing owner.
     if dwelling.owner:
-        owner = dwelling.owner
+        oldOwner = dwelling.owner
         # Find & clear associated mortgages.
-        mortgageRemoved = next((m for m in owner.mortgages if m.dwelling == dwelling), None)
+        mortgageRemoved = next((m for m in oldOwner.mortgages if m.dwelling == dwelling), None)
         if mortgageRemoved:
-            owner.mortgages.remove(mortgageRemoved)
+            oldOwner.mortgages.remove(mortgageRemoved)
             if mortgageRemoved in bank.activeMortgages:
                 bank.activeMortgages.remove(mortgageRemoved)
             proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
-            owner.money += max(0, proceeds) # Incase household still owes money
+            oldOwner.money += max(0, proceeds) # Incase household still owes money
         else:
-            owner.money += dwelling.salePrice
+            oldOwner.money += dwelling.salePrice
 
         # Remove owners.
-        if dwelling in owner.owns:
-            owner.owns.remove(dwelling)
+        if dwelling in oldOwner.owns:
+            oldOwner.owns.remove(dwelling)
         dwelling.owner = None
 
         # Those living in the house now become homeless.
@@ -81,6 +98,8 @@ def sell(dwelling: Dwelling, bank: Bank) -> None:
 
 
 def purchase(household: Household, dwelling: Dwelling, bank: Bank) -> None:
+    # Take house off the market
+    dwelling.isOnMarket = False
     
     # Checks if a house is already mortgaged
     for mort in bank.activeMortgages:

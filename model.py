@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
 from constants import GRID_DIM, PROFIT_MARGIN
-from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, updateHousePrices, determineSale, sell
+from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, updateHousePrices, determineSale, releaseFromOldOwner, putOnMarket, adjustMarketPrices
 from copy import deepcopy
 from imageHandling import getNonDwellingCoords
 
@@ -31,6 +31,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
                 house.owner = None
                 if house.occupant: house.occupant.occupying = None
                 house.occupant = None
+                house.isOnMarket = True
             # Remove self from household list and instantiate new household to replace.
             households.remove(x)
             households.append(Household())
@@ -47,9 +48,10 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
             x.occupying.owner.money += x.occupying.rentPrice
             x.money -= x.occupying.rentPrice
 
-        # Determine if households want to sell houses. Selling of rented houses may make renters homeless.
-        # if len(determineSale(x)) > 0: print(len(determineSale(x)))
-        for dwelling in determineSale(x): sell(dwelling, bank)
+        # Adjust price of household's houses on the market that havent sold.
+        adjustMarketPrices(x)
+        # Determine if households want to sell houses. Put those to be sold on the market.
+        putOnMarket(determineSale(x))
     
     # Allow households to purchase dwellings if they can afford one.
     for x in households:
@@ -57,6 +59,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
         for i in range(3):
             bestPurchaseOption = findHouseToPurchase(dwellings, x)
             if bestPurchaseOption:
+                releaseFromOldOwner(bestPurchaseOption, bank)
                 purchase(x, bestPurchaseOption, bank)
             else:
                 break
@@ -179,7 +182,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         plt.savefig(f"./step{i}")
 
 def main() -> None:
-    steps = runSimulation(50)
+    steps = runSimulation(100)
     graphSimulation(steps)
 
 if __name__ == "__main__":
