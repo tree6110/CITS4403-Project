@@ -13,7 +13,7 @@ class Dwelling:
         self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.purchasePrice = self.salePrice 
-
+        
 
 # Class for households.
 class Household:
