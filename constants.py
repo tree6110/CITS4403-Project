@@ -20,4 +20,4 @@ PROFIT_MARGIN = 1.5 # Buyer's want to sell once house gains 50% of original valu
 ################## Banking constants #####################
 BASE_INTEREST_RATE = 0.05
 LOAN_PERIOD = 30 # Average loan period to pay it back
-DEPOSIT = 0.2
+DEPOSIT = 0.3

@@ -1,5 +1,6 @@
 from classes import Dwelling, Household, Mortgage, Bank
 from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
+import random
 
 # Find all unoccupied dwellings.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
@@ -23,7 +24,12 @@ def getOnMarketDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
 
 # Search available houses for the one with the highest quality that can be purchased.
 def findHouseToPurchase(allDwellings: list[Dwelling], household: Household) -> Dwelling | None:
-    canPurchase = list(filter(lambda x: x.isOnMarket and x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money, allDwellings))
+    # canPurchase = list(filter(lambda x: x.isOnMarket and (x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money), allDwellings))
+    canPurchase = list(filter(lambda x: x.isOnMarket and not x.owner == household and (x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money), allDwellings))
+    # If purchasing investment property, pick randomly.
+    if household.owns:
+        return random.choice(canPurchase) if canPurchase else None
+    # Otherwise, prioritise quality. 
     return sorted(canPurchase, key=lambda x: (-x.quality, x.salePrice))[0] if len(canPurchase) > 0 else None
 
 
@@ -68,7 +74,12 @@ def adjustMarketPrices(household: Household) -> None:
     # If this house was already on the market and didn't sell, adjust it's price down by 10%
     for dwelling in household.owns:
         if dwelling.isOnMarket:
-            dwelling.salePrice = dwelling.salePrice * 0.9
+            if dwelling.salePrice >= 0.8 * dwelling.purchasePrice:
+                dwelling.salePrice = dwelling.salePrice * 0.9
+                dwelling.rentPrice = dwelling.salePrice * RENT_PORTION_OF_PRICE
+            else:
+                dwelling.isOnMarket = False
+
 
 
 def releaseFromOldOwner(dwelling: Dwelling, bank: Bank) -> None:

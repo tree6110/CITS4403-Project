@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_DIM, PROFIT_MARGIN
+from constants import GRID_DIM
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, updateHousePrices, determineSale, releaseFromOldOwner, putOnMarket, adjustMarketPrices
 from copy import deepcopy
 from imageHandling import getNonDwellingCoords
@@ -9,7 +9,7 @@ from imageHandling import getNonDwellingCoords
 
 
 # TODO: write in a more object-oriented way with a class for each step that stores dwelling and household lists.
-def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> tuple[list[Dwelling], list[Household], Bank]:
+def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sales: list[float]) -> tuple[list[Dwelling], list[Household], Bank]:
     
     # Update the interest rates
     bank.updateInterestRate()
@@ -48,7 +48,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
             x.occupying.owner.money += x.occupying.rentPrice
             x.money -= x.occupying.rentPrice
 
-        # Adjust price of household's houses on the market that havent sold.
+        # Adjust price of household's houses on the market that haven't sold.
         adjustMarketPrices(x)
         # Determine if households want to sell houses. Put those to be sold on the market.
         putOnMarket(determineSale(x))
@@ -56,11 +56,12 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
     # Allow households to purchase dwellings if they can afford one.
     for x in households:
         # Can purchase up to 3 per tick, stop trying to purchase once unsuccessful.
-        for i in range(3):
+        for i in range(10):
             bestPurchaseOption = findHouseToPurchase(dwellings, x)
             if bestPurchaseOption:
                 releaseFromOldOwner(bestPurchaseOption, bank)
                 purchase(x, bestPurchaseOption, bank)
+                sales.append(bestPurchaseOption.salePrice)
             else:
                 break
     
@@ -76,7 +77,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank) -> 
     return dwellings, households, bank
 
 
-def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household], Bank]]:
+def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household], Bank, list[float]]]:
     # Calculate coordinates that are water and will not have a dwelling placed on them.
     NO_HOUSE_COORDS = getNonDwellingCoords('data/map.png')
     numHouses = GRID_DIM*GRID_DIM - len(NO_HOUSE_COORDS)
@@ -84,6 +85,7 @@ def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household], Ba
     # Initialise empty dwellings and households.
     currDwellings: list[Dwelling] = []
     currHouseholds: list[Household] = []
+    currSales: list[float] = []
     # Initialise bank.
     bigBank = Bank() 
     for i in range(GRID_DIM):
@@ -95,8 +97,9 @@ def runSimulation(nSteps: int) -> list[tuple[list[Dwelling], list[Household], Ba
         currHouseholds.append(Household())
 
     for i in range(nSteps):
-        steps.append((deepcopy(currDwellings), deepcopy(currHouseholds), deepcopy(bigBank)))
-        tick(currDwellings, currHouseholds, bigBank)
+        steps.append((deepcopy(currDwellings), deepcopy(currHouseholds), deepcopy(bigBank), deepcopy(currSales)))
+        currSales = []
+        tick(currDwellings, currHouseholds, bigBank, currSales)
     return steps
 
 def reconstructQualityGrid(dwellings: list[Dwelling]):
@@ -106,15 +109,15 @@ def reconstructQualityGrid(dwellings: list[Dwelling]):
         i, j = dwelling.coord
         # I have no idea why I need to reverse this here but it seems to work and I want to move on...
         mapTiles[j, i] = dwelling.quality
-            
     return mapTiles
 
-def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -> None:
+def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank, list[float]]]) -> None:
     
     historicalUnoccupied = []
     historicalRented = []
     historicalOwnerOccupied = []
-    historicalAvgHousePrice = []
+    historicalAvgHousePrice: list[float] = []
+    historicalAvgHouseListings: list[float] = []
 
     qualityGrid = reconstructQualityGrid(steps[0][0])
     fig = plt.figure(figsize=(20, 7), constrained_layout=True)
@@ -125,7 +128,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
     e = plt.subplot2grid((3,7), (0,5), colspan=2, fig=fig)
     f = plt.subplot2grid((3,7), (1,5), colspan=2, fig=fig)
 
-    for i, (dwellings, households, _bank) in enumerate(steps):
+    for i, (dwellings, households, _bank, sales) in enumerate(steps):
         b.clear()
         incomes = list(map(lambda x: x.income, households))
         b.set_title("Income")
@@ -142,8 +145,8 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         historicalRented.append(len(rentedCoords))
         historicalOwnerOccupied.append(len(ownedCoords))
         unoccupiedForSale = [x for x in unoccupiedDwellings if x.owner is None]
-        historicalAvgHousePrice.append(0 if not unoccupiedForSale else sum(x.salePrice for x in unoccupiedForSale)/len(unoccupiedForSale))
-
+        historicalAvgHouseListings.append(historicalAvgHouseListings[-1] if not unoccupiedForSale else sum(x.salePrice for x in unoccupiedForSale)/len(unoccupiedForSale))
+        historicalAvgHousePrice.append(sum(sales)/len(sales) if sales else 0)
     
         a.clear()
         a.axis([0, GRID_DIM, 0, GRID_DIM])
@@ -178,6 +181,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank]]) -
         f.clear()
         f.set_title("Average house price over time")
         f.plot(historicalAvgHousePrice, color="red")
+        f.plot(historicalAvgHouseListings, color="red")
 
         plt.savefig(f"./step{i}")
 
