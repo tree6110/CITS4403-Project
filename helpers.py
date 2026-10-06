@@ -1,5 +1,5 @@
-from classes import Dwelling, Household, Bank, Mortgage
-from constants import DEPOSIT
+from classes import Dwelling, Household, Mortgage, Bank
+from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
 
 # Find all dwellings for sale.
 def getUnoccupiedDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
@@ -28,11 +28,62 @@ def findHouseToRent(allDwellings: list[Dwelling], household: Household) -> Dwell
     return sorted(canRent, key=lambda x: (-x.quality, x.rentPrice))[0] if len(canRent) > 0 else None
 
 
-def purchase(household: Household, dwelling: Dwelling) -> None:
-    from model import bigBank
+# Changes house prices based on interest rates
+def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> None:
+    rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
+    for d in dwellings:
+        d.salePrice *= rate 
+        d.rentPrice = d.salePrice * RENT_PORTION_OF_PRICE
+
+
+# Determines if a household wants to sell
+def determineSale(household: Household) -> list[Dwelling]:
+    housesToSell = []
+
+    for house in household.owns.copy():
+        # Investment house price is greater than 50% of purchase price
+        isInvestment = household.occupying != house
+        madeProfit = house.salePrice >= (house.purchasePrice * PROFIT_MARGIN)
+
+        #Household can't afford mortgage payments
+        isBroke = household.money < sum(m.annualPayment() for m in household.mortgages) #in case a household has multiple mortgages
+
+        if (isInvestment and madeProfit) or isBroke:
+            housesToSell.append(house)
+        
+    return(housesToSell)
+
+
+def sell(dwelling: Dwelling, bank: Bank) -> None:
+    # Check dwelling has an owner.
+    if dwelling.owner:
+        owner = dwelling.owner
+        # Find & clear associated mortgages.
+        mortgageRemoved = next((m for m in owner.mortgages if m.dwelling == dwelling), None)
+        if mortgageRemoved:
+            owner.mortgages.remove(mortgageRemoved)
+            if mortgageRemoved in bank.activeMortgages:
+                bank.activeMortgages.remove(mortgageRemoved)
+            proceeds = dwelling.salePrice - mortgageRemoved.loanAmount
+            owner.money += max(0, proceeds) # Incase household still owes money
+        else:
+            owner.money += dwelling.salePrice
+
+        # Remove owners.
+        if dwelling in owner.owns:
+            owner.owns.remove(dwelling)
+        dwelling.owner = None
+
+        # Those living in the house now become homeless.
+        if dwelling.occupant:
+            dwelling.occupant.occupying = None
+            dwelling.occupant = None
+
+
+def purchase(household: Household, dwelling: Dwelling, bank: Bank) -> None:
     
-    #Checks if a house is already mortgaged
-    for mort in bigBank.activeMortgages:
+    # Checks if a house is already mortgaged
+    for mort in bank.activeMortgages:
         if mort.dwelling == dwelling:
             return 
 
@@ -55,18 +106,20 @@ def purchase(household: Household, dwelling: Dwelling) -> None:
     elif hasDeposit:
         household.money -= requiredDeposit
         loanAmount = dwelling.salePrice - requiredDeposit
-        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
-        bigBank.activeMortgages.append(newMortgage)
+        newMortgage = Mortgage(household, dwelling, loanAmount, bank.interestRate)
+        bank.activeMortgages.append(newMortgage)
         household.mortgages.append(newMortgage)
     elif leveragedHouse is not None:
         loanAmount = dwelling.salePrice
-        newMortgage = Mortgage(household, dwelling, loanAmount, bigBank.interestRate)
-        bigBank.activeMortgages.append(newMortgage)
+        newMortgage = Mortgage(household, dwelling, loanAmount, bank.interestRate)
+        bank.activeMortgages.append(newMortgage)
         household.mortgages.append(newMortgage)
     else:
         #Cannot afford regardless
         return
 
+    #Record purchase price for selling profit calculations
+    dwelling.purchasePrice = dwelling.salePrice
 
     # Update owners & occupancy
     household.owns.append(dwelling)

@@ -12,8 +12,8 @@ class Dwelling:
         self.owner : Household | None = None
         self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
-
-
+        self.purchasePrice = self.salePrice 
+        
 # Class for households.
 class Household:
     def __init__(self):
@@ -49,7 +49,7 @@ class Mortgage:
         self.interestRate = interestRate
 
     def annualPayment(self):
-        return (self.loanAmount / LOAN_PERIOD) + (self.loanAmount * (1-DEPOSIT))
+        return (self.loanAmount / LOAN_PERIOD) + (self.loanAmount * self.interestRate)
 
 ################# Functions for initialisation of objects #####################
 
