@@ -161,7 +161,7 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household]]]) -> None
         plt.savefig(f"./step{i}")
 
 def main() -> None:
-    steps = runSimulation(5)
+    steps = runSimulation(10)
     graphSimulation(steps)
 
 if __name__ == "__main__":
