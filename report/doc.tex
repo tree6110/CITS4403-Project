@@ -11,19 +11,16 @@
 \maketitle
 
 \section{Background}
+\label{sec:introduction}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
 % - Summarises relevant studies and places the project in the context of existing literature.
-
-
-\label{sec:introduction}
-
-
-Housing instablity currently exists as a critical socioeconomic issue within Australian
+Housing instability currently exists as a critical socioeconomic issue within Australian
 society. Despite high levels of economic prosperity, escalating housing
 pressures and persistent homelessness continue to affect Australians
 \cite{absEstimating, aihw2023australia}, placing disproportionate 
 burden on marginalised and lower-income groups, such as
 young people, migrants and renters~\cite{daley2018housing}. 
+\\
 
 Over the past two decades, housing and rental costs in Australia have increased
 significantly relative to incomes, with home-ownership rates for all age
@@ -32,11 +29,12 @@ income households~\cite{daley2018housing}. In addition to these general affordab
 multiple interest rate increases by the Reserve Bank of Australia (RBA) have 
 heavily increased mortgage repayments, creating more financial stress for those lucky enough
 to enter the housing market~\cite{commbank2026rba}. 
+\\
 
 The purpose of this model is to act as a controlled environment to discover and analyses the
-factors that drive housing instability in Perth. 
-%- Have not finished the above paragraph
-%- want to add smtn about how studies are Australian based, our model is specifically Perth
+factors that drive housing instability in Perth. While the majority of studies regarding the housing market
+are typically based within an Australian context, our model is specific to the Perth CBD landscape.
+%- Not really happy with how the last paragraph ends
 
 \section{Research aims}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
@@ -66,9 +64,10 @@ Amplification in the Tokyo Housing Market \\
 https://www.comses.net/codebases/0fbece58-7669-4204-870f-1643e7821fb5/releases/1.0.0/
 (not peer reviewed)
 \\
-\\
+
 \textit{Model that our base model was inspired by:}
 \\
+
 General Housing Model~\cite{applegate2020general}
 \\
 
@@ -76,12 +75,44 @@ General Housing Model~\cite{applegate2020general}
 \section{Model specification}
 % - Defines the components, variables, interactions, equations or update rules needed to understand the model.
 % - States assumptions and initialisation rules, and justifies relevant model-design and parameter choices.
+\textbf{Classes}
+\\
+
+\texttt{Household}: Represents the people 
+\\
+
+\texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
+is initialised with a tuple representing a set of coordinates (\textit{coord}),
+which then determines it's \textit{quality} based on its location to hotspots, such
+as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (None
+when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
+Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
+\textit{AVERAGE\_HOUSE\_PRICE} (or \textit{AVERAGE\_RENT} if it's being used as 
+a rental), multiplyed by it's quality score, and then further multiplied by a 
+random factor to account for real world variations.
+\\
+
+\texttt{Bank}:
+
+
+
+% how helpers work
+% how tick() works
 
 \subsection{Assumptions}
 Note that these assumptions are not yet actually implemented in the model:
 \\
 Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
+
+% rent is a certain percentage of house price
+% average median price normally, then in high & low socioeconomic areas
+% interest rate based on most recient hike
+% assuming investers want to sell once house is 50% over price brought at
+% average loan period (source)
+% 20% deposit
+
+
 
 \section{Methodology}
 % aka experimental design
