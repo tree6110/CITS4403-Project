@@ -2,3 +2,6 @@
 *.png
 .DS_Store
 **/__pycache__/
+report/doc.synctex.gz
+report/doc.log
+report/doc.bbl
