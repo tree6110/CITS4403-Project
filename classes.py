@@ -2,7 +2,6 @@ import numpy as np
 from typing import Any
 from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, DEPOSIT, QUALITY_PRICE_INFLUENCE
 
-
 # Class for houses.
 class Dwelling:
     def __init__(self, coord : tuple[int, int]):
@@ -13,6 +12,7 @@ class Dwelling:
         self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.purchasePrice = self.salePrice 
+        self.isOnMarket = True
         
 # Class for households.
 class Household:
