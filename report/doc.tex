@@ -41,6 +41,17 @@ are typically based within an Australian context, our model is specific to the P
 % - Summarises relevant studies and places the project in the context of existing literature.
 
 \subsection{Research hypothesis}
+Our hypothesis for this study is to determine which factors have the greatest
+impact on home ownership rates and housing instability in Perth. Specifically, 
+how factors such as the recent interest rate hikes, the upfront deposit amounts 
+required, and the general income inequality between agents affect housing 
+accessibility. Ultimately, we plan to use our model to evaluate these variables
+to discover which factor has the most significant influence on Perth's current 
+housing instability.
+\\
+% ahfbsrghb need to reword last bit, i dont like it
+
+% should we go in as to why we chose these factors??
 
 
 \subsection{Contributions}
@@ -78,9 +89,6 @@ General Housing Model~\cite{applegate2020general}
 \textbf{Classes}
 \\
 
-\texttt{Household}: Represents the people 
-\\
-
 \texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
 is initialised with a tuple representing a set of coordinates (\textit{coord}),
 which then determines it's \textit{quality} based on its location to hotspots, such
@@ -92,7 +100,22 @@ a rental), multiplyed by it's quality score, and then further multiplied by a
 random factor to account for real world variations.
 \\
 
-\texttt{Bank}:
+\texttt{Household}: Represents the people occupying the houses in our model. They're
+initialised with an income using a lognormal distribution, with the mean being the
+\textit{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
+double their income, so the household can start buying/renting houses immediately
+(if applicable). A \texttt{Household} can occupy a house (\textit{occupying}), and
+can own multiple houses and mortgages (\textit{owns} and \textit{mortgages} 
+respectively).
+\\
+
+\texttt{Bank}: Represents the bank. Each \texttt{Bank} is initialised with a base
+interest rate (\textit{interestRate}), and tracks all the active mortgages 
+(\textit{activeMortgages}) occuring in the model. It also hosts an method to update
+the interest rate each year to simulate the rate changes, with the interest rate 
+unable to go above 17.5\% or below 0.1\% based on historical data \cite{ratehistory}. 
+
+\texttt{Mortgages}: 
 
 
 
@@ -105,12 +128,12 @@ Note that these assumptions are not yet actually implemented in the model:
 Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
 
-% rent is a certain percentage of house price
-% average median price normally, then in high & low socioeconomic areas
-% interest rate based on most recient hike
+% rent is a certain percentage of house price (source)
+% average median price normally, then in high & low socioeconomic areas 
+% interest rate based on most recient hike (rateHistory)
 % assuming investers want to sell once house is 50% over price brought at
 % average loan period (source)
-% 20% deposit
+% 20% deposit (source) 
 
 
 
@@ -128,6 +151,9 @@ Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly o
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
 % - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
+
+% - limitation idea, we used a lognormal distrib when irl its more right skewed??
+% - also we only update the interest rate each year, normally done quarterly??
 
 \section{Conclusion}
 % same as Discussion
