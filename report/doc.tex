@@ -14,8 +14,8 @@
 \label{sec:introduction}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
 % - Summarises relevant studies and places the project in the context of existing literature.
-Housing instability currently exists as a critical socioeconomic issue within Australian
-society. Despite high levels of economic prosperity, escalating housing
+Housing instability currently exists as a critical socioeconomic issue within 
+Australian society. Despite high levels of economic prosperity, escalating housing
 pressures and persistent homelessness continue to affect Australians
 \cite{absEstimating, aihw2023australia}, placing disproportionate 
 burden on marginalised and lower-income groups, such as
@@ -24,7 +24,7 @@ young people, migrants and renters~\cite{daley2018housing}.
 
 Over the past two decades, housing and rental costs in Australia have increased
 significantly relative to incomes, with home-ownership rates for all age
-groups under 65 decreasing, particulary among the younger demographic and lower 
+groups under 65 decreasing, particularly among the younger demographic and lower 
 income households~\cite{daley2018housing}. In addition to these general affordability issues,
 multiple interest rate increases by the Reserve Bank of Australia (RBA) have 
 heavily increased mortgage repayments, creating more financial stress for those lucky enough
@@ -50,14 +50,11 @@ to discover which factor has the most significant influence on Perth's current
 housing instability.
 \\
 % ahfbsrghb need to reword last bit, i dont like it
-
 % should we go in as to why we chose these factors??
-
 
 \subsection{Contributions}
 % - Clearly distinguishes the team’s contribution from existing approaches or taught examples.
-% - Explains the purpose of that contribution and demonstrates its added value or insigh
-
+% - Explains the purpose of that contribution and demonstrates its added value or insight
 
 \section{Prior work}
 % This is from a not-very-reputable journal and has a dodgy citation.
@@ -96,7 +93,7 @@ as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (N
 when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
 Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
 \textit{AVERAGE\_HOUSE\_PRICE} (or \textit{AVERAGE\_RENT} if it's being used as 
-a rental), multiplyed by it's quality score, and then further multiplied by a 
+a rental), multiplied by it's quality score, and then further multiplied by a 
 random factor to account for real world variations.
 \\
 
@@ -114,10 +111,20 @@ interest rate (\textit{interestRate}), and tracks all the active mortgages
 (\textit{activeMortgages}) occuring in the model. It also hosts an method to update
 the interest rate each year to simulate the rate changes, with the interest rate 
 unable to go above 17.5\% or below 0.1\% based on historical data \cite{ratehistory}. 
+\\
 
-\texttt{Mortgages}: 
+\texttt{Mortgages}: Holds information about each households' mortgage 
+(or mortgages). It tracks the household who is responsible for paying off the loan
+(\textit{borrower}), and the property that is tied to the mortgage (\textit{dwelling}).
+It also holds the \textit{initialLoanAmount} for the loan, along with the year's 
+\textit{interestRate}, how many years the loan has been active for (\textit{yearsPaid}),
+and the remaining balance on the loan (\textit{loanAmount}). The \texttt{Mortgages}
+class also has a method to calculate the annual payments a household has to make
+towards their mortgage by using the annuity formula, which most Australian banks 
+implement~\cite{wikimortgage}\cite{moneysmart}.
 
-
+% as of the 9th, I haven't fixed the mortgage formula yet
+% payment = P * (r * (1 + r)**N) / ((1 + r)**N - 1)
 
 % how helpers work
 % how tick() works
@@ -154,6 +161,7 @@ Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly o
 
 % - limitation idea, we used a lognormal distrib when irl its more right skewed??
 % - also we only update the interest rate each year, normally done quarterly??
+% - typically formula is used for monthly payments - could have a different effect
 
 \section{Conclusion}
 % same as Discussion
