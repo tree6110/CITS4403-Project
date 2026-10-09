@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
 % TODO: 1 inch margins as required by project spec.
@@ -227,6 +227,7 @@ valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
 % - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
 % - Provides sufficient procedural detail to repeat the experiments.
 
+
 3 runs each time to calculate the median
 base run (ie = 0.55, dep = 0.2, inter = 0.046
 Analyses the differences via percent renters, percent owner occupied, 
@@ -271,7 +272,7 @@ Changing the deposit amount required (keeping the other variables constant):
     \% of Renters    & 32.186\%     & 39.626\%     & 41.559\%     & 40.503\%     & 48.296\%   & 37.348\%  \\ \hline
     \% of Owners    & 39.486\%     & 45.580\%     & 43.917\%     & 42.763\%     & 40.401\%   & 38.462\%  \\ \hline
     \% of Homeless    & 13.462\%     & 14.794\%     & 14.524\%     & 16.734\%     & 11.302\%   & 24.190\%  \\ \hline
-    \% of Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\&  \\ \hline
+    \% of Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\%  \\ \hline
 \end{tabular}
 \\
 
@@ -287,14 +288,35 @@ Changing the interest rate (keeping the other variables constant):
 \end{tabular}
 \\
 
-
-
-
-
 \section{Discussion}
+\subsection{Findings}
+\textbf{Inequality Index}: as the index increases in value (i.e. as the gap widens 
+between the rich and the poor), we see that the rate of renters and homeless overall increases,
+along with the rate of home owners overall decreasing, which is what we expected to see. 
+However, the mobility (the percentage of renters in step 10 who become home owners in step 30)
+jumps in percentage compared to the control group, which is suprising as
+we expected to see a decline due to the fall of home ownership and the rise of renters. 
+\\
+
+\textbf{Deposit Amount}: as the deposit amount increases, it hypothetically becomes harder to obtain
+a mortgage due to the additional savings required, and we see that with the percentage of home owners overall
+decreasing. We also see that homelessness rate increases, peaking at 24.190\% when households need to save
+30\% of the house price. Mobility has a rise and fall as the deposit increases, whilst the percentage
+of renters seems to increase and then fluctuate randomly once we hit the deposit amount of 15\%. 
+\\
+
+\textbf{Interest Rates}: as the interest rate increased, we predicted that renters and homelessness would
+increase whilst the amount of home owners decreases, as mortgage repayments would have become more expensive.
+However, the results show nearly the opposite, with the percentage of home owners actually increasing as
+the rates rise (reaching 45.563\% when rates are 5.6\%), whilst the percentage of renters decreases
+to 33.772\%. Meanwhile, homelessness generally increases to a peak of 20.665\% at the highest rate, and 
+mobility had a slight decrease, which is more in line with what we expected would happen.
+\\
+
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
 % - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
+
 
 \subsection{Limitations}
 Our model has many limitations. Some of them include:
@@ -347,14 +369,29 @@ Our model has many limitations. Some of them include:
   % and can impact their ability to make payments, resulting in our model overestimating
   % the amount of homeowners\cite{moneysmartbuying}. 
 \end{itemize}
-% bit worried that the above is quite wordy and may need to be cut down, since we have
-% a hard 5 page limit ;-;
 
 
 \section{Conclusion}
-% same as Discussion
+Based on our model's findings, we can address the hypothesis by evaluating how 
+each factor influences home ownership and housing instability in Perth.
+\\
+The results indicate that the required deposit amounts and the income inequality have
+the most direct impact on housing accessibility. Since a higher deposit means households
+have to save up for longer, it gatekeeps households from the housing market, shown in the 
+increase of renters and homelessness. Similarly, when the income inequality is widened,
+it makes it harder for households to find houses in their price range and afford loan repayments,
+again resulting in lower ownership and higher renter and homelessness rates. 
 
-\section{Future work}
+On the other hand, interest rates showed contradictory results, by showing home ownership increasing
+when rates increased. This suggests that interest rates in isolation play a less dominant role in determining
+housing instability in our model. However, there is also the possibility that there was an unknown error
+in our model which caused this result.
+
+In conclusion, based on our model's findings, governmental policies that target reducing upfront costs
+and addressing income inequality will most likely have the most influence on fixing Perth's housing instability.
+%again i dont like the wording on the last part, but i'm a little eepy.
+
+
 
 % \subsubsection{Credit statement}
 % \emph{Pudney}: Core + solver backend implementation, benchmarking and survey design and implementation, document preparation. \emph{Grinbergs}: loss backend implementation, documentation preparation. \emph{Daggitt}: Conceptualisation, ITP backend and documentation preparation.
