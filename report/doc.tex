@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
 % TODO: 1 inch margins as required by project spec.
 \newgeometry{vmargin={15mm}, hmargin={17mm, 17mm}}
 \begin{document}
@@ -21,7 +22,6 @@ pressures and persistent homelessness continue to affect Australians
 burden on marginalised and lower-income groups, such as
 young people, migrants and renters~\cite{daley2018housing}. 
 \\
-
 Over the past two decades, housing and rental costs in Australia have increased
 significantly relative to incomes, with home-ownership rates for all age
 groups under 65 decreasing, particularly among the younger demographic and lower 
@@ -30,7 +30,6 @@ multiple interest rate increases by the Reserve Bank of Australia (RBA) have
 heavily increased mortgage repayments, creating more financial stress for those lucky enough
 to enter the housing market~\cite{commbank2026rba}. 
 \\
-
 The purpose of this model is to act as a controlled environment to discover and analyses the
 factors that drive housing instability in Perth. While the majority of studies regarding the housing market
 are typically based within an Australian context, our model is specific to the Perth CBD landscape.
@@ -192,24 +191,45 @@ can buy, sell or rent out houses.
     \item If unable to own a house, households can then try and rent a house.
 \end{enumerate}
 
+% \subsection{Assumptions}
+% \begin{itemize}
+%   \item\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
+% \cite{abs2021greater}.
+%   \item\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
+%   \item\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
+%   \item\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
+%   \cite{ratehistory}: 4.6\%. 
+%   % Will change during experimentation to determine it's effect
+%   % on home ownership using historical rates (ranging from 1\% to 17.5\%).
+%   \item\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
+% valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
+%   \item\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
+% 30 years.
+%   \item\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
+% % Will change during experimentation to 2\% to simulate government programs such as Keystart
+% % \cite{keystart}.
+% \end{itemize}
+
 \subsection{Assumptions}
-\begin{itemize}
-  \item\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
-\cite{abs2021greater}.
-  \item\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
-  \item\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
-  \item\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
-  \cite{ratehistory}: 4.6\%. 
-  % Will change during experimentation to determine it's effect
-  % on home ownership using historical rates (ranging from 1\% to 17.5\%).
-  \item\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
-valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
-  \item\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
-30 years.
-  \item\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
-% Will change during experimentation to 2\% to simulate government programs such as Keystart
-% \cite{keystart}.
-\end{itemize}
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+% \begin{tabular}{@{}p{2.6cm}p{1.8cm}p{7.5cm}@{}}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Basis} \\
+\midrule
+Income (weekly)   & \$1,865   & Median household income, 2021 census\cite{abs2021greater} \\
+House price       & \$965,000 & Median price \cite{reiwa} \\
+Rent (weekly)     & \$750     & Median rent \cite{reiwa} \\
+Interest rate     & 4.6\%     & Cash rate from 30 Sept 2026 \cite{ratehistory} \\
+Profit margin     & 150\%     & Investors sell at 150\% of original cost (chosen arbitrarily) \\
+Loan period       & 30 years  & Average mortgage term \cite{loanperiod} \\
+Deposit           & 20\%      & Average Australian home deposit \cite{deposit} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Methodology}
 % aka experimental design
@@ -239,41 +259,56 @@ a time and keeping the rest the same as per the control group.
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
 
-Changing the inequality index (keeping the other variables constant):
-\\
-\begin{tabular}{|c|c|c|c|c|}
-    \hline
-    Inequality at: & 0.50 & 0.55 (Control) & 0.60 & 0.65 \\ \hline
-    \% of Renters    & 42.476\%    & 40.503\%     & 43.623\%     & 44.467\%     \\ \hline
-    \% of Owners    & 48.178\%     & 42.763\%     & 38.715\%     & 39.659\%     \\ \hline
-    \% of Homeless    & 10.071\%     & 16.734\%     & 12.888\%     & 15.874\%     \\ \hline
-    \% of Mobility    & 11.034\%     & 7.655\%     & 13.591\%     & 12.094\%     \\ \hline
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{ccccc}
+\toprule
+    Inequality at: & 0.50 & 0.55 & 0.60 & 0.65 \\
+\midrule
+    \% Renters    & 42.476\%    & 40.503\%     & 43.623\%     & 44.467\%     \\ 
+    \% Owners    & 48.178\%     & 42.763\%     & 38.715\%     & 39.659\%     \\ 
+    \% Homeless    & 10.071\%     & 16.734\%     & 12.888\%     & 15.874\%     \\ 
+    Mobility    & 11.034\%     & 7.655\%     & 13.591\%     & 12.094\%     \\ 
+\bottomrule
 \end{tabular}
-\\
+\caption{Housing status for agents at step 25, under varying levels of income inequality.}
+\end{table}
 
-Changing the deposit amount required (keeping the other variables constant):
-\\
-\begin{tabular}{|c|c|c|c|c|c|c|}
-    \hline
-    Deposit at: & 0.05 & 0.10 & 0.15 & 0.20 (Control) & 0.25 & 0.30 \\ \hline
-    \% of Renters    & 32.186\%     & 39.626\%     & 41.559\%     & 40.503\%     & 48.296\%   & 37.348\%  \\ \hline
-    \% of Owners    & 39.486\%     & 45.580\%     & 43.917\%     & 42.763\%     & 40.401\%   & 38.462\%  \\ \hline
-    \% of Homeless    & 13.462\%     & 14.794\%     & 14.524\%     & 16.734\%     & 11.302\%   & 24.190\%  \\ \hline
-    \% of Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\%  \\ \hline
-\end{tabular}
-\\
 
-Changing the interest rate (keeping the other variables constant):
-\\
-\begin{tabular}{|c|c|c|c|c|}
-    \hline
-    Interest Rate at: & 2.6\% & 3.6\% & 4.6\% (Control) & 5.6\% \\ \hline
-    \% of Renters    & 45.445\%    & 40.165\%     & 40.503\%     & 33.772\%     \\ \hline
-    \% of Owners    & 37.690\%     & 41.667\%     & 42.763\%     & 45.563\%     \\ \hline
-    \% of Homeless    & 16.865\%     & 18.168\%     & 16.734\%     & 20.665\%     \\ \hline
-    \% of Mobility    & 9.486\%     & 8.201\%     & 7.655\%     & 7.675\%     \\ \hline
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{ccccccc}
+    \toprule
+    Deposit at: & 0.05 & 0.10 & 0.15 & 0.20 & 0.25 & 0.30 \\ 
+    \midrule
+    \% Renters    & 32.186\%     & 39.626\%     & 41.559\%     & 40.503\%     & 48.296\%   & 37.348\%  \\
+    \% Owners    & 39.486\%     & 45.580\%     & 43.917\%     & 42.763\%     & 40.401\%   & 38.462\%  \\
+    \% Homeless    & 13.462\%     & 14.794\%     & 14.524\%     & 16.734\%     & 11.302\%   & 24.190\%  \\
+    Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\%  \\
+    \bottomrule
 \end{tabular}
-\\
+\caption{Housing status for agents at step 25, with morgatge deposits offered at varying rates.}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{ccccccc}
+    \toprule
+    Deposit at: & 0.05 & 0.10 & 0.15 & 0.20  & 0.25 & 0.30 \\ 
+    \midrule
+    Interest Rate at: & 2.6\% & 3.6\% & 4.6\% (Control) & 5.6\% \\
+    \% of Renters    & 45.445\%    & 40.165\%     & 40.503\%     & 33.772\%     \\
+    \% of Owners    & 37.690\%     & 41.667\%     & 42.763\%     & 45.563\%     \\
+    \% of Homeless    & 16.865\%     & 18.168\%     & 16.734\%     & 20.665\%     \\
+    \% of Mobility    & 9.486\%     & 8.201\%     & 7.655\%     & 7.675\%     \\
+    \bottomrule
+\end{tabular}
+\caption{Housing status for agents at step 25, with morgatge deposits offered at varying rates.}
+\end{table}
+
 
 \section{Discussion}
 \subsection{Findings}
