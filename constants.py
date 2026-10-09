@@ -6,18 +6,17 @@ MAX_QUALITY_POINTS = [(5,17), (5,22), (12, 22), (17, 23), (20, 27)]
 QUALITY_PRICE_INFLUENCE = 1.2 # Factor by which price increases with each quality level
 
 ################# Household constants #####################
-AVERAGE_INCOME = 80000
+AVERAGE_INCOME = 1865 * 52
 MAX_INCOME = 5000000
 
 ################# Market constants #####################
 # Average rent per year.
-AVERAGE_HOUSE_PRICE = 800000
-RENT_PORTION_OF_PRICE = 0.05
-AVERAGE_RENT = RENT_PORTION_OF_PRICE*AVERAGE_HOUSE_PRICE
+AVERAGE_HOUSE_PRICE = 965000
+AVERAGE_RENT = 750 * 52
 PROFIT_MARGIN = 1.5 # Buyer's want to sell once house gains 50% of original value
 
 
 ################## Banking constants #####################
-BASE_INTEREST_RATE = 0.05
+BASE_INTEREST_RATE = 0.046
 LOAN_PERIOD = 30 # Average loan period to pay it back
-DEPOSIT = 0.3
+DEPOSIT = 0.2 #Will be changed to 0.05 in experiments
