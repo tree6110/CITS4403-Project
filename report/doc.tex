@@ -11,27 +11,50 @@
 \maketitle
 
 \section{Background}
-
-
 \label{sec:introduction}
-Housing instablity exists as a critical socioeconomic issue within Australian
-society. Despite high levels of economic prosperity, escalating housing
+% - Establishes the problem, its significance and a focused research question or modelling objective.
+% - Summarises relevant studies and places the project in the context of existing literature.
+Housing instability currently exists as a critical socioeconomic issue within 
+Australian society. Despite high levels of economic prosperity, escalating housing
 pressures and persistent homelessness continue to affect Australians
 \cite{absEstimating, aihw2023australia}, placing disproportionate 
 burden on marginalised and lower-income groups, such as
-young people, migrants and renters~\cite{daley2018housing}.
+young people, migrants and renters~\cite{daley2018housing}. 
+\\
 
-Over the past two decades, housing costs in Australia have increased
-significantly relative to incomes, with home-ownership for all age
-groups under 65 decreasing~\cite{daley2018housing}.
-% ^ particularly among younger and lower income households.
+Over the past two decades, housing and rental costs in Australia have increased
+significantly relative to incomes, with home-ownership rates for all age
+groups under 65 decreasing, particularly among the younger demographic and lower 
+income households~\cite{daley2018housing}. In addition to these general affordability issues,
+multiple interest rate increases by the Reserve Bank of Australia (RBA) have 
+heavily increased mortgage repayments, creating more financial stress for those lucky enough
+to enter the housing market~\cite{commbank2026rba}. 
+\\
 
-\section{Reaearch aims}
+The purpose of this model is to act as a controlled environment to discover and analyses the
+factors that drive housing instability in Perth. While the majority of studies regarding the housing market
+are typically based within an Australian context, our model is specific to the Perth CBD landscape.
+%- Not really happy with how the last paragraph ends
 
+\section{Research aims}
+% - Establishes the problem, its significance and a focused research question or modelling objective.
+% - Summarises relevant studies and places the project in the context of existing literature.
 
 \subsection{Research hypothesis}
-\subsection{Contributions}
+Our hypothesis for this study is to determine which factors have the greatest
+impact on home ownership rates and housing instability in Perth. Specifically, 
+how factors such as the recent interest rate hikes, the upfront deposit amounts 
+required, and the general income inequality between agents affect housing 
+accessibility. Ultimately, we plan to use our model to evaluate these variables
+to discover which factor has the most significant influence on Perth's current 
+housing instability.
+\\
+% ahfbsrghb need to reword last bit, i dont like it
+% should we go in as to why we chose these factors??
 
+\subsection{Contributions}
+% - Clearly distinguishes the team’s contribution from existing approaches or taught examples.
+% - Explains the purpose of that contribution and demonstrates its added value or insight
 
 \section{Prior work}
 % This is from a not-very-reputable journal and has a dodgy citation.
@@ -49,27 +72,100 @@ Amplification in the Tokyo Housing Market \\
 https://www.comses.net/codebases/0fbece58-7669-4204-870f-1643e7821fb5/releases/1.0.0/
 (not peer reviewed)
 \\
-\\
+
 \textit{Model that our base model was inspired by:}
 \\
+
 General Housing Model~\cite{applegate2020general}
 \\
 
 
 \section{Model specification}
+% - Defines the components, variables, interactions, equations or update rules needed to understand the model.
+% - States assumptions and initialisation rules, and justifies relevant model-design and parameter choices.
+\textbf{Classes}
+\\
+
+\texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
+is initialised with a tuple representing a set of coordinates (\textit{coord}),
+which then determines it's \textit{quality} based on its location to hotspots, such
+as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (None
+when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
+Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
+\textit{AVERAGE\_HOUSE\_PRICE} (or \textit{AVERAGE\_RENT} if it's being used as 
+a rental), multiplied by it's quality score, and then further multiplied by a 
+random factor to account for real world variations.
+\\
+
+\texttt{Household}: Represents the people occupying the houses in our model. They're
+initialised with an income using a lognormal distribution, with the mean being the
+\textit{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
+double their income, so the household can start buying/renting houses immediately
+(if applicable). A \texttt{Household} can occupy a house (\textit{occupying}), and
+can own multiple houses and mortgages (\textit{owns} and \textit{mortgages} 
+respectively).
+\\
+
+\texttt{Bank}: Represents the bank. Each \texttt{Bank} is initialised with a base
+interest rate (\textit{interestRate}), and tracks all the active mortgages 
+(\textit{activeMortgages}) occuring in the model. It also hosts an method to update
+the interest rate each year to simulate the rate changes, with the interest rate 
+unable to go above 17.5\% or below 0.1\% based on historical data \cite{ratehistory}. 
+\\
+
+\texttt{Mortgages}: Holds information about each households' mortgage 
+(or mortgages). It tracks the household who is responsible for paying off the loan
+(\textit{borrower}), and the property that is tied to the mortgage (\textit{dwelling}).
+It also holds the \textit{initialLoanAmount} for the loan, along with the year's 
+\textit{interestRate}, how many years the loan has been active for (\textit{yearsPaid}),
+and the remaining balance on the loan (\textit{loanAmount}). The \texttt{Mortgages}
+class also has a method to calculate the annual payments a household has to make
+towards their mortgage by using the annuity formula, which most Australian banks 
+implement~\cite{wikimortgage}\cite{moneysmart}.
+
+% how helpers work
+% how tick() works
+
 \subsection{Assumptions}
 Note that these assumptions are not yet actually implemented in the model:
 \\
 Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
+Housing Prices: Median price data: \$965,000 \cite{reiwa}.
+Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.% OR average yield based on \url{https://www.savings.com.au/property/western-australia-rental-yield}
+Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite{ratehistory}.
+
+
+% interest rate based on most recient hike (rateHistory)
+
+% assuming investers want to sell once house is 50% over price brought at
+
+% average loan period (source)
+% 20% deposit (source) 
+
+
 
 \section{Methodology}
+% aka experimental design
+% - Uses appropriate experiments or case studies to investigate the research question and explore model behaviour.
+% - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
+% - Provides sufficient procedural detail to repeat the experiments.
 
 \section{Results}
+% - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
+% - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
 
 \section{Discussion}
+% - Interprets findings in relation to the research question, rather than merely repeating the results.
+% - Draws evidence-supported conclusions and explains the insights gained about the system.
+% - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
+
+% - limitation idea, we used a lognormal distrib when irl its more right skewed??
+% - also we only update the interest rate each year, normally done quarterly??
+% - typically formula is used for monthly payments - could have a different effect
 
 \section{Conclusion}
+% same as Discussion
 
 \section{Future work}
 
