@@ -18,8 +18,8 @@ class Dwelling:
 class Household:
     def __init__(self):
         # Use lognormal distribution to model income.
-        self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=1)
-        self.money = 2 * self.income
+        self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=0.55)
+        self.money = 0
         self.occupying = None
         self.owns = []
         self.mortgages = [] #Tracks which house has a mortgage (if own multiple)

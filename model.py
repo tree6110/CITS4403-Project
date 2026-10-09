@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_DIM, LOAN_PERIOD
+from constants import GRID_DIM, LOAN_PERIOD, COST_OF_LIVING
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, updateHousePrices, determineSale, releaseFromOldOwner, putOnMarket, adjustMarketPrices
 from copy import deepcopy
 from imageHandling import getNonDwellingCoords
@@ -36,7 +36,7 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sal
 
     # Process income, mortgage payments, and rent, then allow households to sell dwellings.
     for x in households:
-        x.money += x.income
+        x.money += max(0, x.income - COST_OF_LIVING)
         for mort in x.mortgages.copy():
             payment = mort.annualPayment()
             x.money -= payment
@@ -84,14 +84,15 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sal
     for x in households:
         # Can purchase up to 3 per tick, stop trying to purchase once unsuccessful.
         for i in range(10):
-            bestPurchaseOption = findHouseToPurchase(dwellings, x)
-            if bestPurchaseOption:
-                releaseFromOldOwner(bestPurchaseOption, bank)
-                purchase(x, bestPurchaseOption, bank)
-                sales.append(bestPurchaseOption.salePrice)
-            else:
-                break
-    
+            if i == 0 or np.random.rand() < 0.8:
+                bestPurchaseOption = findHouseToPurchase(dwellings, x)
+                if bestPurchaseOption:
+                    releaseFromOldOwner(bestPurchaseOption, bank)
+                    purchase(x, bestPurchaseOption, bank)
+                    sales.append(bestPurchaseOption.salePrice)
+                else:
+                    break
+        
     # Allow households to rent an unoccupied house owned by someone else if they are not living anywhere else.
     for x in households:
         if not x.occupying:
@@ -211,9 +212,10 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank, lis
         f.plot(historicalAvgHouseListings, color="red")
 
         plt.savefig(f"./step{i}")
+        print("step", i)
 
 def main() -> None:
-    steps = runSimulation(100)
+    steps = runSimulation(40)
     graphSimulation(steps)
 
 if __name__ == "__main__":

@@ -6,8 +6,8 @@ MAX_QUALITY_POINTS = [(5,17), (5,22), (12, 22), (17, 23), (20, 27)]
 QUALITY_PRICE_INFLUENCE = 1.2 # Factor by which price increases with each quality level
 
 ################# Household constants #####################
-AVERAGE_INCOME = 1865 * 52
-MAX_INCOME = 5000000
+AVERAGE_INCOME = 1865 * 52 
+COST_OF_LIVING = 40000
 
 ################# Market constants #####################
 # Average rent per year.

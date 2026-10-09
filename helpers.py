@@ -1,5 +1,5 @@
 from classes import Dwelling, Household, Mortgage, Bank
-from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, RENT_PORTION_OF_PRICE
+from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, AVERAGE_RENT
 import random
 
 # Find all unoccupied dwellings.
@@ -25,7 +25,7 @@ def getOnMarketDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
 # Search available houses for the one with the highest quality that can be purchased.
 def findHouseToPurchase(allDwellings: list[Dwelling], household: Household) -> Dwelling | None:
     # canPurchase = list(filter(lambda x: x.isOnMarket and (x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money), allDwellings))
-    canPurchase = list(filter(lambda x: x.isOnMarket and not x.owner == household and (x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money), allDwellings))
+    canPurchase: list[Dwelling] = list(filter(lambda x: x.isOnMarket and x.owner != household and (x.salePrice <= household.money or (x.salePrice*DEPOSIT <= household.money and len(household.mortgages) <= 2)), allDwellings))
     # If purchasing investment property, pick randomly.
     if household.owns:
         return random.choice(canPurchase) if canPurchase else None
@@ -44,7 +44,7 @@ def updateHousePrices(dwellings: list[Dwelling], currentInterestRate: float) -> 
     rate = 1.0 + (currentInterestRate - BASE_INTEREST_RATE)
     for d in dwellings:
         d.salePrice *= rate 
-        d.rentPrice = d.salePrice * RENT_PORTION_OF_PRICE
+        d.rentPrice *= rate
 
 
 # Determines if a household wants to sell.
@@ -76,7 +76,7 @@ def adjustMarketPrices(household: Household) -> None:
         if dwelling.isOnMarket:
             if dwelling.salePrice >= 0.8 * dwelling.purchasePrice:
                 dwelling.salePrice = dwelling.salePrice * 0.9
-                dwelling.rentPrice = dwelling.salePrice * RENT_PORTION_OF_PRICE
+                dwelling.rentPrice = dwelling.rentPrice * 0.9
             else:
                 dwelling.isOnMarket = False
 
