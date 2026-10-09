@@ -232,46 +232,63 @@ base run (ie = 0.55, dep = 0.2, inter = 0.046
 Analyses the differences via percent renters, percent owner occupied, 
 percent homeless, mobility (\% of renters step 10 that then own at step 30]
 
+Mobility in this context means the percentage of renters in step 10 who own
+a home by step 30.
+
+
 changing inequality
   - 0.5, 0.6, 0.65 
   higher the number, higher the inequality.
+  
+changing 
 
 %## altering inequality
-0.50
-[0.5121457489878543,
-0.4139676113360324,
-0.07388663967611336,
-0.1091703056768559]
 
-[0.4225708502024291,
-0.4817813765182186,
-0.09564777327935223,
-0.11538461538461539]
 
-[0.3395748987854251,
-0.527834008097166,
-0.1325910931174089,
-0.10648148148148148]
 
 
 \section{Results}
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
-We ran the control simulation three times to get the mean percentage of:
-\begin{itemize}
-\item \texttt{renters}: 40.503\%,
-\item \texttt{home owners}: 42.763\%, 
-\item \texttt{homeless}: 16.734\%, 
-\item \texttt{renters in step 10 who own a home in step 30}: 7.655\%. 
-\end{itemize}
 
-Altering the inequality index, we get the results at inequality = 0.50
-\begin{itemize}
-\item \texttt{renters}: 40.503\%,
-\item \texttt{home owners}: 42.763\%, 
-\item \texttt{homeless}: 16.734\%, 
-\item \texttt{renters in step 10 who own a home in step 30}: 7.655\%. 
-\end{itemize}
+Changing the inequality index (keeping the other variables constant):
+\\
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Inequality at: & 0.50 & 0.55 (Control) & 0.60 & 0.65 \\ \hline
+    \% of Renters    & 42.476\%    & 40.503\%     & 43.623\%     & 44.467\%     \\ \hline
+    \% of Owners    & 48.178\%     & 42.763\%     & 38.715\%     & 39.659\%     \\ \hline
+    \% of Homeless    & 10.071\%     & 16.734\%     & 12.888\%     & 15.874\%     \\ \hline
+    \% of Mobility    & 11.034\%     & 7.655\%     & 13.591\%     & 12.094\%     \\ \hline
+\end{tabular}
+\\
+
+Changing the deposit amount required (keeping the other variables constant):
+\\
+\begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    Deposit at: & 0.05 & 0.10 & 0.15 & 0.20 (Control) & 0.25 & 0.30 \\ \hline
+    \% of Renters    & 32.186\%     & 39.626\%     & 41.559\%     & 40.503\%     & 48.296\%   & 37.348\%  \\ \hline
+    \% of Owners    & 39.486\%     & 45.580\%     & 43.917\%     & 42.763\%     & 40.401\%   & 38.462\%  \\ \hline
+    \% of Homeless    & 13.462\%     & 14.794\%     & 14.524\%     & 16.734\%     & 11.302\%   & 24.190\%  \\ \hline
+    \% of Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\&  \\ \hline
+\end{tabular}
+\\
+
+Changing the interest rate (keeping the other variables constant):
+\\
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Interest Rate at: & 2.6\% & 3.6\% & 4.6\% (Control) & 5.6\% \\ \hline
+    \% of Renters    & 45.445\%    & 40.165\%     & 40.503\%     & 33.772\%     \\ \hline
+    \% of Owners    & 37.690\%     & 41.667\%     & 42.763\%     & 45.563\%     \\ \hline
+    \% of Homeless    & 16.865\%     & 18.168\%     & 16.734\%     & 20.665\%     \\ \hline
+    \% of Mobility    & 9.486\%     & 8.201\%     & 7.655\%     & 7.675\%     \\ \hline
+\end{tabular}
+\\
+
+
+
 
 
 \section{Discussion}
