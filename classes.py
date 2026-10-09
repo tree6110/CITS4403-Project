@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Any
-from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, DEPOSIT, QUALITY_PRICE_INFLUENCE
+from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, COST_OF_LIVING, QUALITY_PRICE_INFLUENCE
 import itertools
 _ids = itertools.count()
 # Class for houses.
@@ -10,7 +10,7 @@ class Dwelling:
         self.quality = getDwellingQuality(coord)
         self.occupant : Household | None = None
         self.owner : Household | None = None
-        self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
+        self.rentPrice = AVERAGE_RENT * np.random.uniform(0.5,1.5)
         self.salePrice = AVERAGE_HOUSE_PRICE * np.random.uniform(0.5,1.5) * (QUALITY_PRICE_INFLUENCE ** self.quality)
         self.purchasePrice = self.salePrice 
         self.isOnMarket = True
@@ -20,7 +20,8 @@ class Household:
     def __init__(self):
         # Use lognormal distribution to model income.
         self.income = np.random.lognormal(mean=np.log(AVERAGE_INCOME), sigma=0.55)
-        self.money = 0
+        self.money = self.income - COST_OF_LIVING
+        # self.money = 0
         self.occupying = None
         self.owns = []
         self.mortgages = [] #Tracks which house has a mortgage (if own multiple)
@@ -56,7 +57,7 @@ class Mortgage:
         payment = self.initialLoanAmount * (self.interestRate * (1 + self.interestRate)**LOAN_PERIOD) / ((1 + self.interestRate)**LOAN_PERIOD - 1)
         return payment
 
-################# Functions for initialisation of objects #####################
+################# Functions for initialization of objects #####################
 
 # Find the distance between two points.
 def getDistBetween(p1 : tuple[int, int], p2 : tuple[int, int]) -> np.floating[Any]:
