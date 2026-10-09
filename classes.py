@@ -37,8 +37,8 @@ class Bank:
 
         if self.interestRate < 0.01:
             self.interestRate = 0.01
-        elif self.interestRate > 0.2:
-            self.interestRate = 0.2
+        elif self.interestRate > 0.175:
+            self.interestRate = 0.175
 
 # Class for Mortgages
 class Mortgage:

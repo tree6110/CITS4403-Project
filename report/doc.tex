@@ -46,11 +46,31 @@ impact on home ownership rates and housing instability in Perth. Specifically,
 how factors such as the recent interest rate hikes, the upfront deposit amounts 
 required, and the general income inequality between agents affect housing 
 accessibility. Ultimately, we plan to use our model to evaluate these variables
-to discover which factor has the most significant influence on Perth's current 
-housing instability.
-\\
-% ahfbsrghb need to reword last bit, i dont like it
-% should we go in as to why we chose these factors??
+to discover which factor has the most significant influence on decreasing Perth's 
+current housing instability.
+\\ % ahfbsrghb need to reword last bit, i dont like it
+
+The reasons we chose to investigate these factors is;
+\begin{itemize}
+  \item Interest Rate Hikes: have been frequently in the news since the RBA has
+  raised the cash rate to its highest since 2011 \cite{abcratehike}. Due to the articles about
+  how home owners face higher mortgage repayments due to this increase, we wanted to test
+  if the interest rate hikes actually are a major factor in Perth's housing instability
+  crisis.
+  \item Upfront Deposit Requirements: The government has implemented programs such as Keystart
+  to reduce the required deposit amount needed to buy a house, from 20\% of its purchase
+  price to 5\%. However recent news articles state that these low deposit schemes
+  actually hinder homeowners, as they now have higher mortgage repayments \cite{newsdeposits}.
+  We want to test if these programs are a significant factor and ultimately if 
+  they improve access into the housing market.
+  \item Income inequality: The wealth disparity heavily impacts the housing market,
+  as the richer households can afford to buy up more housing, and then use those houses
+  as rentals to generate passive income. This is turn creates a cycle of renters
+  needed to rent forever due to affordable housing being brought up as investment
+  properties. We want to evaluate how this wealth gap drives the overall housing 
+  instability in our model, and determine if it is the most significant factor in
+  the decrease of home ownership rates in Perth.
+\end{itemize}
 
 
 \section{Prior work and Contributions}
@@ -128,14 +148,14 @@ which then determines it's \textit{quality} based on its location to hotspots, s
 as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (None
 when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
 Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
-\textit{AVERAGE\_HOUSE\_PRICE} (or \textit{AVERAGE\_RENT} if it's being used as 
+\texttt{AVERAGE\_HOUSE\_PRICE} (or \texttt{AVERAGE\_RENT} if it's being used as 
 a rental), multiplied by it's quality score, and then further multiplied by a 
 random factor to account for real world variations.
 \\
 
 \texttt{Household}: Represents the people occupying the houses in our model. They're
 initialised with an income using a lognormal distribution, with the mean being the
-\textit{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
+\texttt{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
 double their income, so the household can start buying/renting houses immediately
 (if applicable). A \texttt{Household} can occupy a house (\textit{occupying}), and
 can own multiple houses and mortgages (\textit{owns} and \textit{mortgages} 
@@ -161,23 +181,32 @@ implement~\cite{wikimortgage}\cite{moneysmart}.
 
 % how helpers work
 % how tick() works
+% do we need to go into depth about how the graphing works?? (tbh i'm scared of that file lol)
 
 \subsection{Assumptions}
-Note that these assumptions are not yet actually implemented in the model:
-\\
-Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
+\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
-Housing Prices: Median price data: \$965,000 \cite{reiwa}.
-Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
-Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite{ratehistory}.
+\\
+\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
+\\
+\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
+\\
+\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
+\cite{ratehistory}: 4.6\%. Will change during experimentation to determine it's effect
+on home ownership using historical rates (ranging from 1\% to 17.5\%).
+\\
+\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
+valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
+\\
+\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
+30 years.
+\\
+\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
+Will change during experimentation to 2\% to simulate government programs such as Keystart
+\cite{keystart}.
+\\
 
 
-% interest rate based on most recient hike (rateHistory) changed
-
-% assuming investers want to sell once house is 50% over price brought at
-
-% average loan period \cite{loanperiod} changed
-% 20% deposit \cite{deposit} - in experiments will be changed to 0.05
 
 
 
@@ -201,6 +230,10 @@ Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite
 % - typically formula is used for monthly payments - could have a different effect
 % - only houses, not accounting for units which are cheaper upfront
 % - when changing deposit to 5%, model doesn't include lenderes mortgage insurance, which would be an added cost
+% - also doesn't account for first home buyers 
+% - we don't consider other loan types, such as guarantor loans & bank of mum and dad
+% - lots of factors, such as debt (credit scores), comparing home loans, building inspections, settlement & stamp duty, insurance
+% - for above point \url{https://moneysmart.gov.au/home-loans/buying-a-house}
 
 \section{Conclusion}
 % same as Discussion
