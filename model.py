@@ -1,12 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_DIM
+from constants import GRID_DIM, LOAN_PERIOD
 from helpers import getUnoccupiedDwellings, getRentedDwellings, getOwnedDwellings, findHouseToPurchase, findHouseToRent, purchase, updateHousePrices, determineSale, releaseFromOldOwner, putOnMarket, adjustMarketPrices
 from copy import deepcopy
 from imageHandling import getNonDwellingCoords
-
-
 
 # TODO: write in a more object-oriented way with a class for each step that stores dwelling and household lists.
 def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sales: list[float]) -> tuple[list[Dwelling], list[Household], Bank]:
@@ -39,9 +37,38 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sal
     # Process income, mortgage payments, and rent, then allow households to sell dwellings.
     for x in households:
         x.money += x.income
-        for mort in x.mortgages:
+        for mort in x.mortgages.copy():
             payment = mort.annualPayment()
             x.money -= payment
+
+            interestPaid = mort.loanAmount * mort.interestRate
+            principalPaid = payment - interestPaid
+            mort.loanAmount -= principalPaid
+            mort.yearsPaid += 1
+
+            #Remove mortgage from list if fully paid off
+            if mort.loanAmount <= 0:
+                x.mortgages.remove(mort)
+                if mort in bank.activeMortgages:
+                    bank.activeMortgages.remove(mort)
+
+            # If the loan period expires without loan being paid off, bank takes the house
+            elif mort.yearsPaid >= LOAN_PERIOD and mort.loanAmount > 0:
+                x.mortgages.remove(mort)
+                if mort in bank.activeMortgages:
+                    bank.activeMortgages.remove(mort)
+
+                #Bank takes house
+                dwelling = mort.dwelling 
+                if dwelling in x.owns:
+                    x.owns.remove(dwelling)
+
+                #Evict occupants
+                if dwelling.occupant:
+                    dwelling.occupant.occupying = None
+                    dwelling.occupant = None
+                dwelling.owner = None
+                dwelling.isOnMarket = True
 
         # If renting, pay rent.
         if x.occupying and x.occupying.owner != x:
