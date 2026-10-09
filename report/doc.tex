@@ -123,9 +123,6 @@ class also has a method to calculate the annual payments a household has to make
 towards their mortgage by using the annuity formula, which most Australian banks 
 implement~\cite{wikimortgage}\cite{moneysmart}.
 
-% as of the 9th, I haven't fixed the mortgage formula yet
-% payment = P * (r * (1 + r)**N) / ((1 + r)**N - 1)
-
 % how helpers work
 % how tick() works
 
@@ -134,11 +131,15 @@ Note that these assumptions are not yet actually implemented in the model:
 \\
 Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
+Housing Prices: Median price data: \$965,000 \cite{reiwa}.
+Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.% OR average yield based on \url{https://www.savings.com.au/property/western-australia-rental-yield}
+Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite{ratehistory}.
 
-% rent is a certain percentage of house price (source)
-% average median price normally, then in high & low socioeconomic areas 
+
 % interest rate based on most recient hike (rateHistory)
+
 % assuming investers want to sell once house is 50% over price brought at
+
 % average loan period (source)
 % 20% deposit (source) 
 
