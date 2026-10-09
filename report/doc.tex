@@ -52,32 +52,68 @@ housing instability.
 % ahfbsrghb need to reword last bit, i dont like it
 % should we go in as to why we chose these factors??
 
-\subsection{Contributions}
+
+\section{Prior work and Contributions}
+Many prior works attempt to simulate housing markets across varying 
+contexts and approaches. Housing crises in London~\cite{kaveh2022london} and Tokyo~\cite{tamama2026housing} are 
+examined via the implementation of system dynamics models and agent
+based models respectively, with other works focusing on the 
+design of targeted interventions for such scenarios~\cite{daniel2025data}.
+Models developed in the Australian context often seek to support policy
+decisions. Economic modelling approaches are used
+in a 2025 paper to estimate housing need in the Australian market~\cite{daniel2025data},
+whilst a 2020 model of the Australian housing market seeks to
+examine relationships between construction, vacancies, rents and prices,
+via an empirical modelling method,
+finding low interest rates and high immigration as key factors influencing
+rapid growth in housing prices and construction~\cite{saunders2020model}.
+Simple agent based models simulate generic housing markets, with 
+J M Applegate presenting an extendible agent based model, simulating
+interactions between households buying and selling houses of varying quality~\cite{applegate2020general}.
+
+Whilst models exist for the simulation and examination of both housing
+crises, and the Australian market, we seek to combine these elements, with
+a specific focus on the Perth metropolitan region. Similarly to Saunder's
+2020 paper~\cite{saunders2020model}, we aim to identify relationships involving interest rates,
+rates and prices, however aim to do so with specific focus on outcomes
+for renters. Uniquely, we aim to simulate the Perth market via an
+agent-based model, similar to that presented by Applegate, however
+with significant extensions and assumptions tailored to our context.
+Our approach allows us to simulate specific interactions between renters and
+landlords, offering a visual representation of the distribution of
+household rental status and characteristics across the city, alongside
+renter specific outcomes.
+\\
+\\
+We make the following contributions:
+\begin{enumerate}
+    \item We present an \textbf{agent-based model} of the housing market in the
+    Perth metropolitan region
+    \item Via simulation, we investigate the \textbf{impact on renter outcomes
+    associated} with interest rate hikes, upfront deposit amounts 
+    required, and the general income inequality within Perth.
+\end{enumerate}
+
 % - Clearly distinguishes the team’s contribution from existing approaches or taught examples.
 % - Explains the purpose of that contribution and demonstrates its added value or insight
 
-\section{Prior work}
-% This is from a not-very-reputable journal and has a dodgy citation.
-Data-Driven Modelling of Migration, Income Trends, and Rental Pressures to
-Design Targeted Interventions Reducing Housing Instability~\cite{Daniel2025data}
-\\
-Modelling housing need in Australia to 2025~\cite{Rowley2017modelling}
-\\
-London's Housing Crisis; A System Dynamics Analysis of Long-term
-Developments: 40 Years into the Past and 40 Years into the Future 
-\cite{kaveh2022london}
-\\
-HousingABM Japan: An Agent-Based Model of Price and Rent
-Amplification in the Tokyo Housing Market \\
-https://www.comses.net/codebases/0fbece58-7669-4204-870f-1643e7821fb5/releases/1.0.0/
-(not peer reviewed)
-\\
 
-\textit{Model that our base model was inspired by:}
-\\
+% https://onlinelibrary.wiley.com/doi/full/10.1111/1475-4932.12537
 
-General Housing Model~\cite{applegate2020general}
-\\
+% % This is from a not-very-reputable journal and has a dodgy citation.
+% Data-Driven Modelling of Migration, Income Trends, and Rental Pressures to
+% Design Targeted Interventions Reducing Housing Instability~\cite{Daniel2025data}
+% \\
+% Modelling housing need in Australia to 2025~\cite{Rowley2017modelling}
+% \\
+% London's Housing Crisis; A System Dynamics Analysis of Long-term
+% Developments: 40 Years into the Past and 40 Years into the Future
+% \\
+% HousingABM Japan: An Agent-Based Model of Price and Rent
+% Amplification in the Tokyo Housing Market \\
+% https://www.comses.net/codebases/0fbece58-7669-4204-870f-1643e7821fb5/releases/1.0.0/
+% (not peer reviewed)
+% \\
 
 
 \section{Model specification}
@@ -171,8 +207,8 @@ Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite
 
 \section{Future work}
 
-\subsubsection{Credit statement}
-\emph{Pudney}: Core + solver backend implementation, benchmarking and survey design and implementation, document preparation. \emph{Grinbergs}: loss backend implementation, documentation preparation. \emph{Daggitt}: Conceptualisation, ITP backend and documentation preparation.
+% \subsubsection{Credit statement}
+% \emph{Pudney}: Core + solver backend implementation, benchmarking and survey design and implementation, document preparation. \emph{Grinbergs}: loss backend implementation, documentation preparation. \emph{Daggitt}: Conceptualisation, ITP backend and documentation preparation.
 
 \bibliographystyle{splncs04}
 \bibliography{bibliography}
