@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage{geometry}
+\usepackage[margin=1in]{geometry}
 % TODO: 1 inch margins as required by project spec.
 \newgeometry{vmargin={15mm}, hmargin={17mm, 17mm}}
 \begin{document}
@@ -36,42 +36,40 @@ factors that drive housing instability in Perth. While the majority of studies r
 are typically based within an Australian context, our model is specific to the Perth CBD landscape.
 %- Not really happy with how the last paragraph ends
 
-\section{Research aims}
+\section{Research Hypothesis}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
 % - Summarises relevant studies and places the project in the context of existing literature.
 
-\subsection{Research hypothesis}
 Our hypothesis for this study is to determine which factors have the greatest
 impact on home ownership rates and housing instability in Perth. Specifically, 
 how factors such as the recent interest rate hikes, the upfront deposit amounts 
 required, and the general income inequality between agents affect housing 
 accessibility. Ultimately, we plan to use our model to evaluate these variables
 to discover which factor has the most significant influence on decreasing Perth's 
-current housing instability.
-\\ % ahfbsrghb need to reword last bit, i dont like it
+current housing instability. % ahfbsrghb need to reword last bit, i dont like it
 
-The reasons we chose to investigate these factors is;
-\begin{itemize}
-  \item Interest Rate Hikes: have been frequently in the news since the RBA has
-  raised the cash rate to its highest since 2011 \cite{abcratehike}. Due to the articles about
-  how home owners face higher mortgage repayments due to this increase, we wanted to test
-  if the interest rate hikes actually are a major factor in Perth's housing instability
-  crisis.
-  \item Upfront Deposit Requirements: The government has implemented programs such as Keystart
-  to reduce the required deposit amount needed to buy a house, from 20\% of its purchase
-  price to 5\%. However recent news articles state that these low deposit schemes
-  actually hinder homeowners, as they now have higher mortgage repayments \cite{newsdeposits}.
-  We want to test if these programs are a significant factor and ultimately if 
-  they improve access into the housing market.
-  \item Income inequality: The wealth disparity heavily impacts the housing market,
-  as the richer households can afford to buy up more housing, and then use those houses
-  as rentals to generate passive income. This is turn creates a cycle of renters
-  needed to rent forever due to affordable housing being brought up as investment
-  properties. We want to evaluate how this wealth gap drives the overall housing 
-  instability in our model, and determine if it is the most significant factor in
-  the decrease of home ownership rates in Perth.
-\end{itemize}
-
+% The reasons we chose to investigate these factors is;
+% \begin{itemize}
+  % \item Interest Rate Hikes: have been frequently in the news since the RBA has
+  % raised the cash rate to its highest since 2011 \cite{abcratehike}. Due to the articles about
+  % how home owners face higher mortgage repayments due to this increase, we wanted to test
+  % if the interest rate hikes actually are a major factor in Perth's housing instability
+%   crisis.
+%   \item Upfront Deposit Requirements: The government has implemented programs such as Keystart
+%   to reduce the required deposit amount needed to buy a house, from 20\% of its purchase
+%   price to 5\%. However recent news articles state that these low deposit schemes
+%   actually hinder homeowners, as they now have higher mortgage repayments \cite{newsdeposits}.
+%   We want to test if these programs are a significant factor and ultimately if 
+%   they improve access into the housing market.
+%   \item Income inequality: The wealth disparity heavily impacts the housing market,
+%   as the richer households can afford to buy up more housing, and then use those houses
+%   as rentals to generate passive income. This is turn creates a cycle of renters
+%   needed to rent forever due to affordable housing being brought up as investment
+%   properties. We want to evaluate how this wealth gap drives the overall housing 
+%   instability in our model, and determine if it is the most significant factor in
+%   the decrease of home ownership rates in Perth.
+% \end{itemize}
+%vv wordy, might need to cut down if hitting page limit
 
 \section{Prior work and Contributions}
 Many prior works attempt to simulate housing markets across varying 
@@ -139,8 +137,7 @@ We make the following contributions:
 \section{Model specification}
 % - Defines the components, variables, interactions, equations or update rules needed to understand the model.
 % - States assumptions and initialisation rules, and justifies relevant model-design and parameter choices.
-\textbf{Classes}
-\\
+\subsection{Classes}
 
 \texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
 is initialised with a tuple representing a set of coordinates (\textit{coord}),
@@ -179,32 +176,46 @@ class also has a method to calculate the annual payments a household has to make
 towards their mortgage by using the annuity formula, which most Australian banks 
 implement~\cite{wikimortgage}\cite{moneysmart}.
 
-% how helpers work
-% how tick() works
-% do we need to go into depth about how the graphing works?? (tbh i'm scared of that file lol)
+\subsection{Tick() Method}
+The \texttt{tick()} method in our model represents a year passing, in which households
+can buy, sell or rent out houses.
+\begin{enumerate}
+    \item The bank updates the index rate, which also serves as the interest rate. 
+    This in turn updates all the house prices to match the new rate.
+    \item A random selection of 10\% of the households leave the simulation, allocating
+    their houses back to the market and clearing their loans. New households will take
+    their place.
+    \item Households then get paid their yearly income and make mortgage and rent
+    payments (if applicable). If they can't afford the mortgage, the bank takes the house.
+    \item Houses that are on the market that haven't been sold have their prices lowered.
+    Then households with investment properties can sell their houses if it's current
+    price is 150\% greater than the price they brought it for. 
+    \item Households can then purchase up to three houses if they can afford to.
+    \item If unable to own a house, households can then try and rent a house.
+\end{enumerate}
+
+
+
 
 \subsection{Assumptions}
-\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
-\cite{abs2021greater}
-\\
-\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
-\\
-\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
-\\
-\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
-\cite{ratehistory}: 4.6\%. Will change during experimentation to determine it's effect
-on home ownership using historical rates (ranging from 1\% to 17.5\%).
-\\
-\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
+\begin{itemize}
+  \item\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
+\cite{abs2021greater}.
+  \item\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
+  \item\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
+  \item\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
+  \cite{ratehistory}: 4.6\%. 
+  % Will change during experimentation to determine it's effect
+  % on home ownership using historical rates (ranging from 1\% to 17.5\%).
+  \item\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
 valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
-\\
-\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
+  \item\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
 30 years.
-\\
-\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
-Will change during experimentation to 2\% to simulate government programs such as Keystart
-\cite{keystart}.
-\\
+  \item\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
+% Will change during experimentation to 2\% to simulate government programs such as Keystart
+% \cite{keystart}.
+\end{itemize}
+
 
 
 
@@ -216,6 +227,8 @@ Will change during experimentation to 2\% to simulate government programs such a
 % - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
 % - Provides sufficient procedural detail to repeat the experiments.
 
+
+
 \section{Results}
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
@@ -225,15 +238,60 @@ Will change during experimentation to 2\% to simulate government programs such a
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
 % - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
 
-% - limitation idea, we used a lognormal distrib when irl its more right skewed??
-% - also we only update the interest rate each year, normally done quarterly??
-% - typically formula is used for monthly payments - could have a different effect
-% - only houses, not accounting for units which are cheaper upfront
-% - when changing deposit to 5%, model doesn't include lenderes mortgage insurance, which would be an added cost
-% - also doesn't account for first home buyers 
-% - we don't consider other loan types, such as guarantor loans & bank of mum and dad
-% - lots of factors, such as debt (credit scores), comparing home loans, building inspections, settlement & stamp duty, insurance
-% - for above point \url{https://moneysmart.gov.au/home-loans/buying-a-house}
+\subsection{Limitations}
+Our model has many limitations. Some of them include:
+\begin{itemize}
+  \item The formula used to update the interest rate occurs yearly in our model, 
+  whereas in reality it can be updated potentially up to 8 times a year based upon
+  the RBA cash rate board meetings, with the rates being increased four times so far
+  in 2026 \cite{canstarrates}. 
+  % This could either increase or decrease the interest
+  % accrued on ones remaining balance which is not reflected in our model.
+  \item Our formula to calculate mortgage payments is based on interest compounding
+  yearly, and households also making one annual payment. In reality, most interest
+  rates compound monthly with households making monthly or fortnightly payments.
+  % Therfore our model underestimates the total interest accrued over time
+  % through more frequent compounding, which means in reality, the same households 
+  % would have more interest to pay off on their loans.
+  \item In our simulation, we only have one dwelling type (houses). In reality,
+  there are many different dwelling types, such as apartments, townhouses, and
+  duplexes.
+  % which could have lower upfront costs and extra fees (such as strata fees), 
+  % that our model doesn't account for. 
+  % Therefore our model could be underestimating the amount of homeowners due 
+  % to these exclusions. 
+  \item Lower deposit amounts are typically saved for first home buyers, which
+  our model doesn't track.
+  
+  % In our model, we've changed the deposit amount required to 2\% of the house
+  % price to simulate government home buying programs such as Keystart, and seeing if 
+  % that helps increase the rate of homeowners. However, these programs are 
+  % typically for first home buyers, which our model doesn't account for. 
+  % Therfore 
+  % a lot of investors in our model also benefitted from the 2\% deposit, 
+  % exacerbating the gap between renters and buyers, which is not accurate to the 
+  % reality of the situation.
+  \item In addition, when a household takes out a loan 
+  with less than 20\% deposit saved, they also normally have to pay for Lenders
+  Mortgage Insurance (LMI)\cite{canstarlmi}, which isn't included in our model.
+  % LMI is an additional cost that borrowers
+  % either have to pay up front, or add into the loan, but regardless, it is an
+  % added expense that our model doesn't account for. 
+  % that could have affected the 
+  % ratio of homeowners to renters. 
+  \item Our model only considers standard mortgages from banks, and does not consider
+  other loans such as having a guarantor, or having another household buy a house
+  for you (such as the 'Bank of Mum and Dad'). 
+  \item Our model does not take into account factors such as comparing
+  different banks for loans, building inspections, settlement and stamp duty costs, and
+  home insurance to name a few \cite{moneysmartbuying}. 
+  % These additional factors have added costs for households
+  % and can impact their ability to make payments, resulting in our model overestimating
+  % the amount of homeowners\cite{moneysmartbuying}. 
+\end{itemize}
+% bit worried that the above is quite wordy and may need to be cut down, since we have
+% a hard 5 page limit ;-;
+
 
 \section{Conclusion}
 % same as Discussion
