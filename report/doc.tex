@@ -132,16 +132,16 @@ Note that these assumptions are not yet actually implemented in the model:
 Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
 \cite{abs2021greater}
 Housing Prices: Median price data: \$965,000 \cite{reiwa}.
-Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.% OR average yield based on \url{https://www.savings.com.au/property/western-australia-rental-yield}
+Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
 Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite{ratehistory}.
 
 
-% interest rate based on most recient hike (rateHistory)
+% interest rate based on most recient hike (rateHistory) changed
 
 % assuming investers want to sell once house is 50% over price brought at
 
-% average loan period (source)
-% 20% deposit (source) 
+% average loan period \cite{loanperiod} changed
+% 20% deposit \cite{deposit} - in experiments will be changed to 0.05
 
 
 
@@ -163,6 +163,8 @@ Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite
 % - limitation idea, we used a lognormal distrib when irl its more right skewed??
 % - also we only update the interest rate each year, normally done quarterly??
 % - typically formula is used for monthly payments - could have a different effect
+% - only houses, not accounting for units which are cheaper upfront
+% - when changing deposit to 5%, model doesn't include lenderes mortgage insurance, which would be an added cost
 
 \section{Conclusion}
 % same as Discussion
