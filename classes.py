@@ -51,9 +51,8 @@ class Mortgage:
         self.yearsPaid = 0
 
     def annualPayment(self):
-        principal = self.initialLoanAmount / LOAN_PERIOD
-        interestAdd = self.loanAmount * self.interestRate
-        return principal + interestAdd
+        payment = self.initialLoanAmount * (self.interestRate * (1 + self.interestRate)**LOAN_PERIOD) / ((1 + self.interestRate)**LOAN_PERIOD - 1)
+        return payment
 
 ################# Functions for initialisation of objects #####################
 

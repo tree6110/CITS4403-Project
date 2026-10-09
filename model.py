@@ -41,7 +41,8 @@ def tick(dwellings: list[Dwelling], households: list[Household], bank: Bank, sal
             payment = mort.annualPayment()
             x.money -= payment
 
-            principalPaid = mort.initialLoanAmount / LOAN_PERIOD
+            interestPaid = mort.loanAmount * mort.interestRate
+            principalPaid = payment - interestPaid
             mort.loanAmount -= principalPaid
             mort.yearsPaid += 1
 
