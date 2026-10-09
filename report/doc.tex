@@ -227,11 +227,11 @@ Firstly, we created a control simulation, with the \textbf{income inequality} va
 multiple times in order to calculate the mean for each percentage rate (Renters, Owners, Homeless, Mobility),
 since a significant portion of our calculations involve randomness. 
 
-Then we changed the income equality to 0.50, 0.60, and 0.65, where the higher the number, the larger the gap between households with
+Then we changed the income equality to 0.40, 0.50, 0.60, 0.65, 0.70, 0.75 and 1.0, where the higher the number, the larger the gap between households with
 maximum income vs the minimum. When running these simulations, we kept the deposit and interest rate as it
 was in the control group. Again, we ran this multiple times to calculate the mean rates. 
 
-We then did the above for the deposit (0.05, 0.10, 0.15, 0.25 and 0.30) and 
+We then did the above for the deposit (0.05, 0.10, 0.15, 0.25 and 0.30) and %CHECK CHANGES
 interest rate variables (2.6\%, 3.6\% and 5.6\%), only changing one variable at 
 a time and keeping the rest the same as per the control group.
 
@@ -241,63 +241,68 @@ a time and keeping the rest the same as per the control group.
 
 Changing the inequality index (keeping the other variables constant):
 \\
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
     \hline
-    Inequality at: & 0.50 & 0.55 (Control) & 0.60 & 0.65 \\ \hline
-    \% of Renters    & 42.476\%    & 40.503\%     & 43.623\%     & 44.467\%     \\ \hline
-    \% of Owners    & 48.178\%     & 42.763\%     & 38.715\%     & 39.659\%     \\ \hline
-    \% of Homeless    & 10.071\%     & 16.734\%     & 12.888\%     & 15.874\%     \\ \hline
-    \% of Mobility    & 11.034\%     & 7.655\%     & 13.591\%     & 12.094\%     \\ \hline
+    Inequality at: & 0.40 &     0.50 &    0.55 (Control) & 0.60    &   0.65   & 0.70   &     0.75 &     1.0 \\ \hline
+    \% of Renters  & 40.899\% & 47.183\% & 53.593\%     & 49.882\%  & 51.805\% & 53.863\% &   50.577\%    & 49.325\% \\ \hline
+    \% of Owners   & 49.848\% & 40.722\%  & 35.172\%    & 36.184\%  & 30.558\% & 29.352\% &   30.192\%    & 23.904\%    \\ \hline
+    \% of Homeless  & 9.253\% & 12.095\% & 11.235\%     & 13.934\%  & 17.637\% & 16.785\% &   19.231\%    & 26.771\%    \\ \hline
+    \% of Mobility  & 18.328\% & 16.587\% & 17.570\%    & 16.958\%  & 21.026\% & 22.147\% &   21.849\%    & 23.099\%    \\ \hline
 \end{tabular}
 \\
 
 Changing the deposit amount required (keeping the other variables constant):
 \\
-\begin{tabular}{|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|}
     \hline
-    Deposit at: & 0.05 & 0.10 & 0.15 & 0.20 (Control) & 0.25 & 0.30 \\ \hline
-    \% of Renters    & 32.186\%     & 39.626\%     & 41.559\%     & 40.503\%     & 48.296\%   & 37.348\%  \\ \hline
-    \% of Owners    & 39.486\%     & 45.580\%     & 43.917\%     & 42.763\%     & 40.401\%   & 38.462\%  \\ \hline
-    \% of Homeless    & 13.462\%     & 14.794\%     & 14.524\%     & 16.734\%     & 11.302\%   & 24.190\%  \\ \hline
-    \% of Mobility    & 2.562\%     & 13.418\%     & 11.105\%     & 7.655\%     & 10.374\%   & 5.110\%  \\ \hline
+    Deposit at:     & 0.05        & 0.10         & 0.20 (Control)   & 0.30          & 0.40        \\ \hline
+    \% of Renters   & 50.337\%    & 53.214\%     & 53.593\%         & 45.336\%      & 52.733\%    \\ \hline
+    \% of Owners    & 35.501\%    & 33.544\%     & 35.172\%         & 39.980\%      & 34.194\%    \\ \hline
+    \% of Homeless  & 14.162\%    & 13.242\%     & 11.235\%         & 14.685\%      & 13.074\%    \\ \hline
+    \% of Mobility  & 17.135\%    & 17.327\%     & 17.570\%         & 16.207\%      & 20.232\%    \\ \hline
 \end{tabular}
 \\
 
 Changing the interest rate (keeping the other variables constant):
 \\
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|}
     \hline
-    Interest Rate at: & 2.6\% & 3.6\% & 4.6\% (Control) & 5.6\% \\ \hline
-    \% of Renters    & 45.445\%    & 40.165\%     & 40.503\%     & 33.772\%     \\ \hline
-    \% of Owners    & 37.690\%     & 41.667\%     & 42.763\%     & 45.563\%     \\ \hline
-    \% of Homeless    & 16.865\%     & 18.168\%     & 16.734\%     & 20.665\%     \\ \hline
-    \% of Mobility    & 9.486\%     & 8.201\%     & 7.655\%     & 7.675\%     \\ \hline
+    Interest Rate at: & 0.1\%       & 0.2\%       & 4.6\% (Control)   & 6.0\%       & 10.0\% \\ \hline
+    \% of Renters     & 46.770\%    & 50.194\%    & 53.593\%          & 39.389\%    & 47.149\%  \\ \hline
+    \% of Owners      & 37.399\%    & 35.130\%    & 35.172\%          & 48.119\%    & 40.216\%   \\ \hline
+    \% of Homeless    & 15.832\%    & 14.676\%    & 11.235\%          & 12.492\%    & 12.635\%   \\ \hline
+    \% of Mobility    & 25.458\%    & 21.932\%    & 17.570\%          & 14.888\%    & 13.886\%  \\ \hline
 \end{tabular}
 \\
 
 \section{Discussion}
-\subsection{Findings}
+\subsection{Findings} %CHECK CHANGES
 \textbf{Inequality Index}: as the index increases in value (i.e. as the gap widens 
-between the rich and the poor), we see that the rate of renters and homeless overall increases,
-along with the rate of home owners overall decreasing, which is what we expected to see. 
-However, the mobility (the percentage of renters in step 10 who become home owners in step 30)
-jumps in percentage compared to the control group, which is suprising as
-we expected to see a decline due to the fall of home ownership and the rise of renters. 
+between the rich and the poor), the rate of homelessness steadily increases, peaking at 26.771\%
+at an income inequality level of 1.0. In addition, the percentage of home owners 
+notably decreases, aligning with our initial expectations. Whilst the rate of renters 
+slightly fluctuates, mobility decreases as inequality is smaller than the control group and increases 
+as the inequality level is larger than the control, showing that early renters are still managing to
+enter the property market. 
 \\
 
 \textbf{Deposit Amount}: as the deposit amount increases, it hypothetically becomes harder to obtain
-a mortgage due to the additional savings required, and we see that with the percentage of home owners overall
-decreasing. We also see that homelessness rate increases, peaking at 24.190\% when households need to save
-30\% of the house price. Mobility has a rise and fall as the deposit increases, whilst the percentage
-of renters seems to increase and then fluctuate randomly once we hit the deposit amount of 15\%. 
+a mortgage due to the additional savings required. Interestingly, home ownership rates do not uniformly decline,
+hovering around the ~35\% mark. Homelessness rates also remain steady, not showing any major changes
+as the deposit amount required for a loan increases. However, the rate of renters stays consistantly
+high, representing approximately 50\% of the households in the simulation. In addition, the extra cost doesn't 
+deter renters from entering the property market, as when deposit = 0.4, mobility peaks at 20.232\%. 
 \\
 
-\textbf{Interest Rates}: as the interest rate increased, we predicted that renters and homelessness would
-increase whilst the amount of home owners decreases, as mortgage repayments would have become more expensive.
-However, the results show nearly the opposite, with the percentage of home owners actually increasing as
-the rates rise (reaching 45.563\% when rates are 5.6\%), whilst the percentage of renters decreases
-to 33.772\%. Meanwhile, homelessness generally increases to a peak of 20.665\% at the highest rate, and 
-mobility had a slight decrease, which is more in line with what we expected would happen.
+\textbf{Interest Rates}: as the interest rate increased, we initially predicted 
+that renters and homelessness would increase whilst the amount of home owners 
+decreases, as mortgage repayments would have become more expensive.
+However, the results show nearly the opposite, with the percentage of home owners 
+actually increasing as the rates rise (reaching a high of 48.119\% when rates are 6.0\%), 
+On the other hand, the percentage of renters drops to 39.389\% at the same level. Homelessness
+is actually the highest when the interest rate is at its lowest (15.832\% when rates are 0.1\%) 
+which we did not predict. However, mobility shows a consistent decline as rates rise, falling 
+from 25.458\% to 13.886\%, which is more in line with what we expected.
 \\
 
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
@@ -357,25 +362,31 @@ Our model has many limitations. Some of them include:
   % the amount of homeowners\cite{moneysmartbuying}. 
 \end{itemize}
 
-\section{Conclusion}
+\section{Conclusion}%CHECK CHANGES
 Based on our model's findings, we can address the hypothesis by evaluating how 
 each factor influences home ownership and housing instability in Perth.
 \\
-The results indicate that the required deposit amounts and the income inequality have
-the most direct impact on housing accessibility. Since a higher deposit means households
-have to save up for longer, it gatekeeps households from the housing market, shown in the 
-increase of renters and homelessness. Similarly, when the income inequality is widened,
-it makes it harder for households to find houses in their price range and afford loan repayments,
-again resulting in lower ownership and higher renter and homelessness rates. 
-
-On the other hand, interest rates showed contradictory results, by showing home ownership increasing
-when rates increased. This suggests that interest rates in isolation play a less dominant role in determining
+The results indicate that income inequality has the largest impact on housing acccessibility. When
+the income inequality gap is widened, it makes it harder for households to find 
+houses in their price range and afford loan repayments, therfore resulting in lower 
+ownership and higher renter and homelessness rates. 
+\\
+Deposit requirements had a less predictable effect than anticipated. Rather than
+falling as larger deposits were required, home ownership rates only slightly varied randomly, 
+suggesting that households had possible adjusting their savings when faced with more costs
+to enter the housing market.
+\\
+Interest rates displayed contradictory results to what we predicted, with home ownership rates
+increasing alongside the rates. This suggests that interest rates in isolation play a less dominant role in determining
 housing instability in our model. However, there is also the possibility that there was an unknown error
-in our model which caused this result.
+in our model which caused this result. 
+\\
 
-In conclusion, based on our model's findings, governmental policies that target reducing upfront costs
-and addressing income inequality will most likely have the most influence on fixing Perth's housing instability.
-%again i dont like the wording on the last part, but i'm a little eepy.
+In conclusion, based on our model's findings, income inequality has the most impact on Perth's housing
+market. In order to help bridge the gap, governmental interventions should focus on reducing 
+wealth disparity and easing upfront cost barriers, with a targeted focus on helping 
+low-socioeconomic households. 
+%again i dont like the wording on the last part, but i'm vv eepy.
 
 % \subsubsection{Credit statement}
 % \emph{Pudney}: Core + solver backend implementation, benchmarking and survey design and implementation, document preparation. \emph{Grinbergs}: loss backend implementation, documentation preparation. \emph{Daggitt}: Conceptualisation, ITP backend and documentation preparation.
