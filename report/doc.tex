@@ -227,11 +227,52 @@ valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
 % - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
 % - Provides sufficient procedural detail to repeat the experiments.
 
+3 runs each time to calculate the median
+base run (ie = 0.55, dep = 0.2, inter = 0.046
+Analyses the differences via percent renters, percent owner occupied, 
+percent homeless, mobility (\% of renters step 10 that then own at step 30]
+
+changing inequality
+  - 0.5, 0.6, 0.65 
+  higher the number, higher the inequality.
+
+%## altering inequality
+0.50
+[0.5121457489878543,
+0.4139676113360324,
+0.07388663967611336,
+0.1091703056768559]
+
+[0.4225708502024291,
+0.4817813765182186,
+0.09564777327935223,
+0.11538461538461539]
+
+[0.3395748987854251,
+0.527834008097166,
+0.1325910931174089,
+0.10648148148148148]
 
 
 \section{Results}
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
+We ran the control simulation three times to get the mean percentage of:
+\begin{itemize}
+\item \texttt{renters}: 40.503\%,
+\item \texttt{home owners}: 42.763\%, 
+\item \texttt{homeless}: 16.734\%, 
+\item \texttt{renters in step 10 who own a home in step 30}: 7.655\%. 
+\end{itemize}
+
+Altering the inequality index, we get the results at inequality = 0.50
+\begin{itemize}
+\item \texttt{renters}: 40.503\%,
+\item \texttt{home owners}: 42.763\%, 
+\item \texttt{homeless}: 16.734\%, 
+\item \texttt{renters in step 10 who own a home in step 30}: 7.655\%. 
+\end{itemize}
+
 
 \section{Discussion}
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
