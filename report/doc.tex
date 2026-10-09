@@ -226,27 +226,24 @@ valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
 % - Uses appropriate experiments or case studies to investigate the research question and explore model behaviour.
 % - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
 % - Provides sufficient procedural detail to repeat the experiments.
+To investigate the factors influencing housing instability in Perth, we used an agent-based modeling approach,
+allowing us to simulate the interactions of households within the housing market, and how those interactions
+create patterns in the rental, home ownership, and homelessness rates. We also tracked the percentage of
+renters in step 10 that then go on to own a home by step 30 to see if households could escape the
+"rental trap", naming this percentage \texttt{Mobility}. 
 
+Firstly, we created a control simulation, with the \textbf{income inequality} variable set to 0.55, 
+\textbf{deposit} set to 0.2, and the \textbf{interest rate} set to 0.046. We then ran this control 
+multiple times in order to calculate the mean for each percentage rate (Renters, Owners, Homeless, Mobility),
+since a significant portion of our calculations involve randomness. 
 
-3 runs each time to calculate the median
-base run (ie = 0.55, dep = 0.2, inter = 0.046
-Analyses the differences via percent renters, percent owner occupied, 
-percent homeless, mobility (\% of renters step 10 that then own at step 30]
+Then we changed the income equality to 0.50, 0.60, and 0.65, where the higher the number, the larger the gap between households with
+maximum income vs the minimum. When running these simulations, we kept the deposit and interest rate as it
+was in the control group. Again, we ran this multiple times to calculate the mean rates. 
 
-Mobility in this context means the percentage of renters in step 10 who own
-a home by step 30.
-
-
-changing inequality
-  - 0.5, 0.6, 0.65 
-  higher the number, higher the inequality.
-  
-changing 
-
-%## altering inequality
-
-
-
+We then did the above for the deposit (0.05, 0.10, 0.15, 0.25 and 0.30) and 
+interest rate variables (2.6\%, 3.6\% and 5.6\%), only changing one variable at 
+a time and keeping the rest the same as per the control group.
 
 \section{Results}
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
