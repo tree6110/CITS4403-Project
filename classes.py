@@ -1,7 +1,8 @@
 import numpy as np
 from typing import Any
 from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, DEPOSIT, QUALITY_PRICE_INFLUENCE
-
+import itertools
+_ids = itertools.count()
 # Class for houses.
 class Dwelling:
     def __init__(self, coord : tuple[int, int]):
@@ -23,6 +24,7 @@ class Household:
         self.occupying = None
         self.owns = []
         self.mortgages = [] #Tracks which house has a mortgage (if own multiple)
+        self.id = next(_ids)
 
 
 # Class for Banks

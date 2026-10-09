@@ -25,7 +25,7 @@ def getOnMarketDwellings(allDwellings: list[Dwelling]) -> list[Dwelling]:
 # Search available houses for the one with the highest quality that can be purchased.
 def findHouseToPurchase(allDwellings: list[Dwelling], household: Household) -> Dwelling | None:
     # canPurchase = list(filter(lambda x: x.isOnMarket and (x.salePrice <= household.money or x.salePrice*DEPOSIT <= household.money), allDwellings))
-    canPurchase: list[Dwelling] = list(filter(lambda x: x.isOnMarket and x.owner != household and (x.salePrice <= household.money or (x.salePrice*DEPOSIT <= household.money and len(household.mortgages) <= 2)), allDwellings))
+    canPurchase: list[Dwelling] = list(filter(lambda x: x.isOnMarket and x.owner != household and (x.salePrice <= household.money or (x.salePrice*DEPOSIT <= household.money and len(household.mortgages) <= 3)), allDwellings))
     # If purchasing investment property, pick randomly.
     if household.owns:
         return random.choice(canPurchase) if canPurchase else None

@@ -214,8 +214,29 @@ def graphSimulation(steps: list[tuple[list[Dwelling], list[Household], Bank, lis
         plt.savefig(f"./step{i}")
         print("step", i)
 
+        if i == 29:
+            rentingHouseholds = [x for x in households if x.occupying not in x.owns and x.occupying is not None]
+            rentingPercent = len(rentingHouseholds)/len(households)
+            print("Renting percent:", rentingPercent)
+            ooHouseholds = [x for x in households if x.occupying is not None and x.occupying in x.owns]
+            ooPercent = len(ooHouseholds)/len(households)
+            print("oo percent:", ooPercent)
+            homelessHouseholds = [x for x in households if x.occupying is None]
+            homelessPercent = len(homelessHouseholds)/len(households)
+            print("homeless percent:", homelessPercent)
+
+    step5 = steps[4]
+    step5renters = [x.id for x in step5[1] if x.occupying not in x.owns and x.occupying is not None]
+    step30 = steps[19]
+    step30Owners = [x.id for x in step30[1] if x.occupying is not None and x.occupying in x.owns]
+    purchased = [x for x in step5renters if x in step30Owners and x in [x.id for x in step30[1]]]
+    print(len(purchased))
+    print(len(purchased)/len(step5[1]))
+
+
+
 def main() -> None:
-    steps = runSimulation(40)
+    steps = runSimulation(20)
     graphSimulation(steps)
 
 if __name__ == "__main__":
