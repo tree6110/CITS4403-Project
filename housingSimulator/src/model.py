@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from classes import Dwelling, Household, Bank, Mortgage
-from constants import GRID_DIM, LOAN_PERIOD, COST_OF_LIVING
-from helpers import (
+from housingSimulator.src.classes import Dwelling, Household, Bank, Mortgage
+from housingSimulator.src.constants import GRID_DIM, LOAN_PERIOD, COST_OF_LIVING
+from housingSimulator.utils.helpers import (
     getUnoccupiedDwellings,
     getRentedDwellings,
     getOwnedDwellings,
@@ -16,7 +16,7 @@ from helpers import (
     adjustMarketPrices,
 )
 from copy import deepcopy
-from imageHandling import getNonDwellingCoords
+from housingSimulator.utils.imageHandling import getNonDwellingCoords
 
 
 # Main function used to compute agent actions over one step of time.
@@ -131,7 +131,7 @@ def runSimulation(
     nSteps: int,
 ) -> list[tuple[list[Dwelling], list[Household], Bank, list[float]]]:
     # Calculate coordinates that are water and will not have a dwelling placed on them.
-    NO_HOUSE_COORDS = getNonDwellingCoords("data/map.png")
+    NO_HOUSE_COORDS = getNonDwellingCoords("../data/map.png")
     numHouses = GRID_DIM * GRID_DIM - len(NO_HOUSE_COORDS)
     steps = []
     # Initialise empty dwellings and households.
@@ -250,11 +250,11 @@ def graphSimulation(
         f.plot(historicalAvgHousePrice, color="red")
         f.plot(historicalAvgHouseListings, color="red")
 
-        plt.savefig(f"./step{i}")
+        plt.savefig(f"./results/step{i}")
        
 
 def main() -> None:
-    steps = runSimulation(25)
+    steps = runSimulation(20)
     graphSimulation(steps)
 
 
