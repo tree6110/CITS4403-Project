@@ -3,6 +3,8 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{wrapfig}
 % TODO: 1 inch margins as required by project spec.
 \newgeometry{vmargin={15mm}, hmargin={17mm, 17mm}}
 \begin{document}
@@ -23,7 +25,6 @@ pressures and persistent homelessness continue to affect Australians
 burden on marginalised and lower-income groups, such as
 young people, migrants and renters~\cite{daley2018housing}. 
 \\
-
 Over the past two decades, housing and rental costs in Australia have increased
 significantly relative to incomes, with home-ownership rates for all age
 groups under 65 decreasing, particularly among the younger demographic and lower 
@@ -32,17 +33,16 @@ multiple interest rate increases by the Reserve Bank of Australia (RBA) have
 heavily increased mortgage repayments, creating more financial stress for those lucky enough
 to enter the housing market~\cite{commbank2026rba}. 
 \\
-
-The purpose of this model is to act as a controlled environment to discover and analyses the
-factors that drive housing instability in Perth. While the majority of studies regarding the housing market
-are typically based within an Australian context, our model is specific to the Perth CBD landscape.
+Our model works to act as a controlled environment allowing the discovery and analysis of the
+factors driving housing instability in Perth. While the majority of studies regarding the housing market
+are typically based within an Australian context, our model is specific to landscape of the Perth
+metropolitan region.
 %- Not really happy with how the last paragraph ends
 
 \section{Research Hypothesis}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
 % - Summarises relevant studies and places the project in the context of existing literature.
-
-Our hypothesis for this study is to determine which factors have the greatest
+We aim to determine which factors have the greatest
 impact on home ownership rates and housing instability in Perth. Specifically, 
 how factors such as the recent interest rate hikes, the upfront deposit amounts 
 required, and the general income inequality between agents affect housing 
@@ -139,10 +139,21 @@ We make the following contributions:
 % - States assumptions and initialisation rules, and justifies relevant model-design and parameter choices.
 \subsection{Classes}
 
-\texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
+
+\noindent\texttt{\textbf{Dwellings}}: 
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.38\textwidth]{figures/qualityGrid.png}
+    \caption{Dwelling quality across the map.}
+    \label{fig:quality}
+\end{wrapfigure}
+Represents the houses in our model. Each \texttt{Dwelling}
 is initialised with a tuple representing a set of coordinates (\textit{coord}),
 which then determines it's \textit{quality} based on its location to hotspots, such
-as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (None
+as the Perth CBD, Nedlands, Peppermint Grove, and Cottesloe, as visible 
+in Figure~\ref{fig:quality}, with higher quality areas shown in yellow and lower
+quality in blue.
+Dwellings also store the current \textit{occupant} and \textit{owner}, (None
 when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
 Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
 \texttt{AVERAGE\_HOUSE\_PRICE} (or \texttt{AVERAGE\_RENT} if it's being used as 
@@ -150,7 +161,7 @@ a rental), multiplied by it's quality score, and then further multiplied by a
 random factor to account for real world variations.
 \\
 
-\texttt{Household}: Represents the people occupying the houses in our model. They're
+\noindent\texttt{\textbf{Household}}: Represents the people occupying the houses in our model. They're
 initialised with an income using a lognormal distribution, with the mean being the
 \texttt{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
 double their income, so the household can start buying/renting houses immediately
@@ -159,14 +170,14 @@ can own multiple houses and mortgages (\textit{owns} and \textit{mortgages}
 respectively).
 \\
 
-\texttt{Bank}: Represents the bank. Each \texttt{Bank} is initialised with a base
+\noindent\texttt{\textbf{Bank}}: Represents the bank. Each \texttt{Bank} is initialised with a base
 interest rate (\textit{interestRate}), and tracks all the active mortgages 
 (\textit{activeMortgages}) occuring in the model. It also hosts an method to update
 the interest rate each year to simulate the rate changes, with the interest rate 
 unable to go above 17.5\% or below 0.1\% based on historical data \cite{ratehistory}. 
 \\
 
-\texttt{Mortgages}: Holds information about each households' mortgage 
+\noindent\texttt\textbf{{Mortgages}}: Holds information about each households' mortgage 
 (or mortgages). It tracks the household who is responsible for paying off the loan
 (\textit{borrower}), and the property that is tied to the mortgage (\textit{dwelling}).
 It also holds the \textit{initialLoanAmount} for the loan, along with the year's 
@@ -188,30 +199,35 @@ can buy, sell or rent out houses.
     \item Households then get paid their yearly income and make mortgage and rent
     payments (if applicable). If they can't afford the mortgage, the bank takes the house.
     \item Houses that are on the market that haven't been sold have their prices lowered.
-    Then households with investment properties can sell their houses if it's current
+    Households with investment properties list a houses for sale if its
     price is 150\% greater than the price they brought it for. 
-    \item Households can then purchase up to three houses if they can afford to.
+    \item Households can purchase a house, and are given 9 chances with 80\% chance to be allowed to purchase an additional house.
     \item If unable to own a house, households can then try and rent a house.
 \end{enumerate}
 
 \subsection{Assumptions}
-\begin{itemize}
-  \item\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
-\cite{abs2021greater}.
-  \item\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
-  \item\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
-  \item\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
-  \cite{ratehistory}: 4.6\%. 
-  % Will change during experimentation to determine it's effect
-  % on home ownership using historical rates (ranging from 1\% to 17.5\%).
-  \item\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
-valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
-  \item\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
-30 years.
-  \item\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
+
+\noindent\textbf{Income}: Median household income (weekly): \$1,865.
+Income is modelled on a heavy tailed logonormal distribution, allowing
+the simulation of many agents with similar income, but few agents with significantly higher incomes.
+\cite{abs2021greater}. \\
+\noindent\textbf{Income Inequality}: The logonormal distribution's \texttt{sigma} value of 0.55 results in a gini coefficient of ~0.307,
+mirroring Australia's gini coefficient in 2022-3~\cite{absgini}.
+
+\noindent\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}. \\
+\noindent\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}. \\
+\noindent\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026
+\cite{ratehistory}: 4.6\%. \\
+% Will change during experimentation to determine it's effect
+% on home ownership using historical rates (ranging from 1\% to 17.5\%).
+\noindent\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
+valued at 150\% its original cost, with the 150\% figure chosen arbitrarily. \\
+\noindent\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
+30 years. \\
+\noindent\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
 % Will change during experimentation to 2\% to simulate government programs such as Keystart
 % \cite{keystart}.
-\end{itemize}
+
 
 \section{Methodology}
 % aka experimental design
@@ -238,49 +254,109 @@ interest rate variables (2.6\%, 3.6\% and 5.6\%), only changing one variable at
 a time and keeping the rest the same as per the control group.
 
 \section{Results}
+Results are presented in Tables \ref{tab:inequality}, \ref{tab:deposit} and \ref{tab:interest_rates}.
+Generally, we can observe the proportion of renters increasing as income inequality rises, however
+no significant changes are visible for interest rate or deposit amount increases. Geographically,
+as can be seen in Figure \ref{fig:progress},
+regardless of inequality, rate or deposit changes, higher quality areas consist of either owner
+occupied dwellings or unoccupied dwellings, with middling quality zones being populated mostly by renters,
+and lower quality areas being lived in by renters or uninhabited.
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
 
 
+% \begin{table}[!ht]
+% \centering
+% \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+%     \hline
+%     Inequality at: & 0.40 &     0.50 &    0.55 (Control) & 0.60    &   0.65   & 0.70   &     0.75 &     1.0 \\ \hline
+%     \% of Renters  & 40.899\% & 47.183\% & 53.593\%     & 49.882\%  & 51.805\% & 53.863\% &   50.577\%    & 49.325\% \\ \hline
+%     \% of Owners   & 49.848\% & 40.722\%  & 35.172\%    & 36.184\%  & 30.558\% & 29.352\% &   30.192\%    & 23.904\%    \\ \hline
+%     \% of Homeless  & 9.253\% & 12.095\% & 11.235\%     & 13.934\%  & 17.637\% & 16.785\% &   19.231\%    & 26.771\%    \\ \hline
+%     \% of Mobility  & 18.328\% & 16.587\% & 17.570\%    & 16.958\%  & 21.026\% & 22.147\% &   21.849\%    & 23.099\%    \\ \hline
+% \end{tabular}
+% \caption{Household distribution under changing income inequality levels.}
+% \label{tab:inequality}
+% \end{table}
+
+% \begin{table}[!ht]
+% \centering
+% \begin{tabular}{|c|c|c|c|c|c|}
+%     \hline
+%     Deposit at:     & 0.05        & 0.10         & 0.20 (Control)   & 0.30          & 0.40        \\ \hline
+%     \% of Renters   & 50.337\%    & 53.214\%     & 53.593\%         & 45.336\%      & 52.733\%    \\ \hline
+%     \% of Owners    & 35.501\%    & 33.544\%     & 35.172\%         & 39.980\%      & 34.194\%    \\ \hline
+%     \% of Homeless  & 14.162\%    & 13.242\%     & 11.235\%         & 14.685\%      & 13.074\%    \\ \hline
+%     \% of Mobility  & 17.135\%    & 17.327\%     & 17.570\%         & 16.207\%      & 20.232\%    \\ \hline
+% \end{tabular}
+% \caption{Household distribution under changing deposit requirements.}
+% \label{tab:deposit}
+% \end{table}
+
+
+
+% \begin{table}[!ht]
+% \centering
+% \begin{tabular}{|c|c|c|c|c|c|}
+%     \hline
+%     Interest Rate at: & 0.1\%       & 0.2\%       & 4.6\% (Control)   & 6.0\%       & 10.0\% \\ \hline
+%     \% of Renters     & 46.770\%    & 50.194\%    & 53.593\%          & 39.389\%    & 47.149\%  \\ \hline
+%     \% of Owners      & 37.399\%    & 35.130\%    & 35.172\%          & 48.119\%    & 40.216\%   \\ \hline
+%     \% of Homeless    & 15.832\%    & 14.676\%    & 11.235\%          & 12.492\%    & 12.635\%   \\ \hline
+%     \% of Mobility    & 25.458\%    & 21.932\%    & 17.570\%          & 14.888\%    & 13.886\%  \\ \hline
+% \end{tabular}
+% \caption{Household distribution under changing interest rates.}
+% \label{tab:interest_rates}
+% \end{table}
+
+
 \begin{table}[!ht]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
-    \hline
-    Inequality at: & 0.40 &     0.50 &    0.55 (Control) & 0.60    &   0.65   & 0.70   &     0.75 &     1.0 \\ \hline
-    \% of Renters  & 40.899\% & 47.183\% & 53.593\%     & 49.882\%  & 51.805\% & 53.863\% &   50.577\%    & 49.325\% \\ \hline
-    \% of Owners   & 49.848\% & 40.722\%  & 35.172\%    & 36.184\%  & 30.558\% & 29.352\% &   30.192\%    & 23.904\%    \\ \hline
-    \% of Homeless  & 9.253\% & 12.095\% & 11.235\%     & 13.934\%  & 17.637\% & 16.785\% &   19.231\%    & 26.771\%    \\ \hline
-    \% of Mobility  & 18.328\% & 16.587\% & 17.570\%    & 16.958\%  & 21.026\% & 22.147\% &   21.849\%    & 23.099\%    \\ \hline
+  \centering
+\small
+\begin{tabular}{lcccccccc}
+    \toprule
+    Inequality at: & 0.40 & 0.50 & 0.55 (Control) & 0.60 & 0.65 & 0.70 & 0.75 & 1.0 \\
+    \midrule
+    \% of Renters   & 40.899\% & 47.183\% & 53.593\% & 49.882\% & 51.805\% & 53.863\% & 50.577\% & 49.325\% \\
+    \% of Owners    & 49.848\% & 40.722\% & 35.172\% & 36.184\% & 30.558\% & 29.352\% & 30.192\% & 23.904\% \\
+    \% of Homeless  & 9.253\%  & 12.095\% & 11.235\% & 13.934\% & 17.637\% & 16.785\% & 19.231\% & 26.771\% \\
+    \midrule
+    \% of Mobility  & 18.328\% & 16.587\% & 17.570\% & 16.958\% & 21.026\% & 22.147\% & 21.849\% & 23.099\% \\
+    \bottomrule
 \end{tabular}
 \caption{Household distribution under changing income inequality levels.}
 \label{tab:inequality}
 \end{table}
 
 \begin{table}[!ht]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|}
-    \hline
-    Deposit at:     & 0.05        & 0.10         & 0.20 (Control)   & 0.30          & 0.40        \\ \hline
-    \% of Renters   & 50.337\%    & 53.214\%     & 53.593\%         & 45.336\%      & 52.733\%    \\ \hline
-    \% of Owners    & 35.501\%    & 33.544\%     & 35.172\%         & 39.980\%      & 34.194\%    \\ \hline
-    \% of Homeless  & 14.162\%    & 13.242\%     & 11.235\%         & 14.685\%      & 13.074\%    \\ \hline
-    \% of Mobility  & 17.135\%    & 17.327\%     & 17.570\%         & 16.207\%      & 20.232\%    \\ \hline
+  \centering
+  \begin{tabular}{lccccc}
+    \toprule
+    Deposit at: & 0.05 & 0.10 & 0.20 (Control) & 0.30 & 0.40 \\
+    \midrule
+    \% of Renters   & 50.337\% & 53.214\% & 53.593\% & 45.336\% & 52.733\% \\
+    \% of Owners    & 35.501\% & 33.544\% & 35.172\% & 39.980\% & 34.194\% \\
+    \% of Homeless  & 14.162\% & 13.242\% & 11.235\% & 14.685\% & 13.074\% \\
+    \midrule
+    \% of Mobility  & 17.135\% & 17.327\% & 17.570\% & 16.207\% & 20.232\% \\
+    \bottomrule
 \end{tabular}
 \caption{Household distribution under changing deposit requirements.}
 \label{tab:deposit}
 \end{table}
 
-
-
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|c|c|c|c|c|c|}
-    \hline
-    Interest Rate at: & 0.1\%       & 0.2\%       & 4.6\% (Control)   & 6.0\%       & 10.0\% \\ \hline
-    \% of Renters     & 46.770\%    & 50.194\%    & 53.593\%          & 39.389\%    & 47.149\%  \\ \hline
-    \% of Owners      & 37.399\%    & 35.130\%    & 35.172\%          & 48.119\%    & 40.216\%   \\ \hline
-    \% of Homeless    & 15.832\%    & 14.676\%    & 11.235\%          & 12.492\%    & 12.635\%   \\ \hline
-    \% of Mobility    & 25.458\%    & 21.932\%    & 17.570\%          & 14.888\%    & 13.886\%  \\ \hline
+\begin{tabular}{lccccc}
+  \toprule
+  Interest Rate at: & 0.1\% & 0.2\% & 4.6\% (Control) & 6.0\% & 10.0\% \\
+    \midrule
+    \% of Renters   & 46.770\% & 50.194\% & 53.593\% & 39.389\% & 47.149\% \\
+    \% of Owners    & 37.399\% & 35.130\% & 35.172\% & 48.119\% & 40.216\% \\
+    \% of Homeless  & 15.832\% & 14.676\% & 11.235\% & 12.492\% & 12.635\% \\
+    \midrule
+    \% of Mobility  & 25.458\% & 21.932\% & 17.570\% & 14.888\% & 13.886\% \\
+    \bottomrule
 \end{tabular}
 \caption{Household distribution under changing interest rates.}
 \label{tab:interest_rates}
@@ -292,7 +368,7 @@ a time and keeping the rest the same as per the control group.
 {
     \includegraphics{figures/progress}
 }
-\caption{Household distribution over time}
+\caption{Household distribution over time, with $sigma = 0.55$, $deposit = 0.2$ and $rates = 0.046$ }
 \label{fig:progress}
 \end{figure}
 
@@ -307,7 +383,7 @@ as the inequality level is larger than the control, showing that early renters a
 enter the property market. 
 \\ %INEQUAL GRAPH
 \begin{figure}[H]
-\centering
+  \centering
 \resizebox{0.65\textwidth}{!}
 {
     \includegraphics{figures/income_inequality}
@@ -354,15 +430,13 @@ from 25.458\% to 13.886\%, which is more in line with what we expected.
 \label{fig:interest}
 \end{figure}
 
-
-
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
 % - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
 
 
 \subsection{Limitations}
-Our model has many limitations. Some of them include:
+Limitations exist within our model, including:
 \begin{itemize}
   \item The formula used to update the interest rate occurs yearly in our model, 
   whereas in reality it can be updated potentially up to 8 times a year based upon
@@ -416,22 +490,20 @@ Our model has many limitations. Some of them include:
 \section{Conclusion}
 Based on our model's findings, we can address the hypothesis by evaluating how 
 each factor influences home ownership and housing instability in Perth.
-\\
-The results indicate that income inequality has the largest impact on housing acccessibility. When
+The results indicate that income inequality has the largest impact on housing accessibility. When
 the income inequality gap is widened, it makes it harder for households to find 
-houses in their price range and afford loan repayments, therfore resulting in lower 
+houses in their price range and afford loan repayments, therefore resulting in lower 
 ownership and higher renter and homelessness rates. 
-\\
 Deposit requirements had a less predictable effect than anticipated. Rather than
 falling as larger deposits were required, home ownership rates only slightly varied randomly, 
 suggesting that households had possible adjusting their savings when faced with more costs
 to enter the housing market.
-\\
+
 Interest rates displayed contradictory results to what we predicted, with home ownership rates
 increasing alongside the rates. This suggests that interest rates in isolation play a less dominant role in determining
-housing instability in our model. However, there is also the possibility that there was an unknown error
-in our model which caused this result. 
-\\
+housing instability in our model. However, there is also the possibility that our model
+fails to capture the complexities associated with the influence of interest rates on housing instability,
+preventing it from revealing the relationship adequately.
 
 In conclusion, based on our model's findings, income inequality has the most impact on Perth's housing
 market. In order to help bridge the gap, governmental interventions should focus on reducing 
