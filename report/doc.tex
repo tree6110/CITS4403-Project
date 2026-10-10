@@ -1,12 +1,14 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 
-\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
 % TODO: 1 inch margins as required by project spec.
 \newgeometry{vmargin={15mm}, hmargin={17mm, 17mm}}
 \begin{document}
 
 \title{CITS4403 Project: Modelling the Perth Housing Crisis}
-\author{Lauren Pudney}
+\author{Lauren Pudney \& Ashleigh Saringer}
 
 \maketitle
 
@@ -36,22 +38,40 @@ factors that drive housing instability in Perth. While the majority of studies r
 are typically based within an Australian context, our model is specific to the Perth CBD landscape.
 %- Not really happy with how the last paragraph ends
 
-\section{Research aims}
+\section{Research Hypothesis}
 % - Establishes the problem, its significance and a focused research question or modelling objective.
 % - Summarises relevant studies and places the project in the context of existing literature.
 
-\subsection{Research hypothesis}
 Our hypothesis for this study is to determine which factors have the greatest
 impact on home ownership rates and housing instability in Perth. Specifically, 
 how factors such as the recent interest rate hikes, the upfront deposit amounts 
 required, and the general income inequality between agents affect housing 
 accessibility. Ultimately, we plan to use our model to evaluate these variables
-to discover which factor has the most significant influence on Perth's current 
-housing instability.
-\\
-% ahfbsrghb need to reword last bit, i dont like it
-% should we go in as to why we chose these factors??
+to discover which factor has the most significant influence on decreasing Perth's 
+current housing instability. % ahfbsrghb need to reword last bit, i dont like it
 
+% The reasons we chose to investigate these factors is;
+% \begin{itemize}
+  % \item Interest Rate Hikes: have been frequently in the news since the RBA has
+  % raised the cash rate to its highest since 2011 \cite{abcratehike}. Due to the articles about
+  % how home owners face higher mortgage repayments due to this increase, we wanted to test
+  % if the interest rate hikes actually are a major factor in Perth's housing instability
+%   crisis.
+%   \item Upfront Deposit Requirements: The government has implemented programs such as Keystart
+%   to reduce the required deposit amount needed to buy a house, from 20\% of its purchase
+%   price to 5\%. However recent news articles state that these low deposit schemes
+%   actually hinder homeowners, as they now have higher mortgage repayments \cite{newsdeposits}.
+%   We want to test if these programs are a significant factor and ultimately if 
+%   they improve access into the housing market.
+%   \item Income inequality: The wealth disparity heavily impacts the housing market,
+%   as the richer households can afford to buy up more housing, and then use those houses
+%   as rentals to generate passive income. This is turn creates a cycle of renters
+%   needed to rent forever due to affordable housing being brought up as investment
+%   properties. We want to evaluate how this wealth gap drives the overall housing 
+%   instability in our model, and determine if it is the most significant factor in
+%   the decrease of home ownership rates in Perth.
+% \end{itemize}
+%vv wordy, might need to cut down if hitting page limit
 
 \section{Prior work and Contributions}
 Many prior works attempt to simulate housing markets across varying 
@@ -97,7 +117,6 @@ We make the following contributions:
 % - Clearly distinguishes the team’s contribution from existing approaches or taught examples.
 % - Explains the purpose of that contribution and demonstrates its added value or insight
 
-
 % https://onlinelibrary.wiley.com/doi/full/10.1111/1475-4932.12537
 
 % % This is from a not-very-reputable journal and has a dodgy citation.
@@ -115,12 +134,10 @@ We make the following contributions:
 % (not peer reviewed)
 % \\
 
-
 \section{Model specification}
 % - Defines the components, variables, interactions, equations or update rules needed to understand the model.
 % - States assumptions and initialisation rules, and justifies relevant model-design and parameter choices.
-\textbf{Classes}
-\\
+\subsection{Classes}
 
 \texttt{Dwellings}: Represents the houses in our model. Each \texttt{Dwelling}
 is initialised with a tuple representing a set of coordinates (\textit{coord}),
@@ -128,14 +145,14 @@ which then determines it's \textit{quality} based on its location to hotspots, s
 as the Perth CBD. It stores the current \textit{occupant} and \textit{owner}, (None
 when initialised), alongside whether it is for sale or not (\textit{isOnMarket}). 
 Lastly, each \texttt{Dwelling} has a rent and sale price, formulated using the 
-\textit{AVERAGE\_HOUSE\_PRICE} (or \textit{AVERAGE\_RENT} if it's being used as 
+\texttt{AVERAGE\_HOUSE\_PRICE} (or \texttt{AVERAGE\_RENT} if it's being used as 
 a rental), multiplied by it's quality score, and then further multiplied by a 
 random factor to account for real world variations.
 \\
 
 \texttt{Household}: Represents the people occupying the houses in our model. They're
 initialised with an income using a lognormal distribution, with the mean being the
-\textit{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
+\texttt{AVERAGE\_INCOME} variable, and their cash assets (\textit{money}) are set to
 double their income, so the household can start buying/renting houses immediately
 (if applicable). A \texttt{Household} can occupy a house (\textit{occupying}), and
 can own multiple houses and mortgages (\textit{owns} and \textit{mortgages} 
@@ -159,53 +176,268 @@ class also has a method to calculate the annual payments a household has to make
 towards their mortgage by using the annuity formula, which most Australian banks 
 implement~\cite{wikimortgage}\cite{moneysmart}.
 
-% how helpers work
-% how tick() works
+\subsection{Tick() Method}
+The \texttt{tick()} method in our model represents a year passing, in which households
+can buy, sell or rent out houses.
+\begin{enumerate}
+    \item The bank updates the index rate, which also serves as the interest rate. 
+    This in turn updates all the house prices to match the new rate.
+    \item A random selection of 10\% of the households leave the simulation, allocating
+    their houses back to the market and clearing their loans. New households will take
+    their place.
+    \item Households then get paid their yearly income and make mortgage and rent
+    payments (if applicable). If they can't afford the mortgage, the bank takes the house.
+    \item Houses that are on the market that haven't been sold have their prices lowered.
+    Then households with investment properties can sell their houses if it's current
+    price is 150\% greater than the price they brought it for. 
+    \item Households can then purchase up to three houses if they can afford to.
+    \item If unable to own a house, households can then try and rent a house.
+\end{enumerate}
 
 \subsection{Assumptions}
-Note that these assumptions are not yet actually implemented in the model:
-\\
-Income: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
-\cite{abs2021greater}
-Housing Prices: Median price data: \$965,000 \cite{reiwa}.
-Rental Prices: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
-Interest Rate: Based on the cash rate implemented on the 30th of Sept 2026 \cite{ratehistory}.
-
-
-% interest rate based on most recient hike (rateHistory) changed
-
-% assuming investers want to sell once house is 50% over price brought at
-
-% average loan period \cite{loanperiod} changed
-% 20% deposit \cite{deposit} - in experiments will be changed to 0.05
-
-
+\begin{itemize}
+  \item\textbf{Income}: Median household income (weekly): \$1,865 (ABS 2021 census so slightly out of date)
+\cite{abs2021greater}.
+  \item\textbf{Housing Prices}: Median price data: \$965,000 \cite{reiwa}.
+  \item\textbf{Rental Prices}: Based on the median rental prices  (weekly): \$750 \cite{reiwa}.
+  \item\textbf{Interest Rate}: Based on the cash rate implemented on the 30th of Sept 2026 
+  \cite{ratehistory}: 4.6\%. 
+  % Will change during experimentation to determine it's effect
+  % on home ownership using historical rates (ranging from 1\% to 17.5\%).
+  \item\textbf{Profit Margin}: Assuming that home investors will sell their property once it is 
+valued at 150\% its original cost, with the 150\% figure chosen arbitrarily.
+  \item\textbf{Average Loan Period}: Based on the average loan period for most mortgages \cite{loanperiod}:
+30 years.
+  \item\textbf{House Deposit}: Based on the average home deposit in Australia \cite{deposit}: 20\%. 
+% Will change during experimentation to 2\% to simulate government programs such as Keystart
+% \cite{keystart}.
+\end{itemize}
 
 \section{Methodology}
 % aka experimental design
 % - Uses appropriate experiments or case studies to investigate the research question and explore model behaviour.
 % - Specifies scenarios, parameter ranges, outcome measures and, where relevant, repeated runs or comparisons.
 % - Provides sufficient procedural detail to repeat the experiments.
+To investigate the factors influencing housing instability in Perth, we used an agent-based modeling approach,
+allowing us to simulate the interactions of households within the housing market, and how those interactions
+create patterns in the rental, home ownership, and homelessness rates. We also tracked the percentage of
+renters in step 10 that then go on to own a home by step 30 to see if households could escape the
+"rental trap", naming this percentage \texttt{Mobility}. 
+
+Firstly, we created a control simulation, with the \textbf{income inequality} variable set to 0.55, 
+\textbf{deposit} set to 0.2, and the \textbf{interest rate} set to 0.046. We then ran this control 
+multiple times in order to calculate the mean for each percentage rate (Renters, Owners, Homeless, Mobility),
+since a significant portion of our calculations involve randomness. 
+
+Then we changed the income equality to 0.40, 0.50, 0.60, 0.65, 0.70, 0.75 and 1.0, where the higher the number, the larger the gap between households with
+maximum income vs the minimum. When running these simulations, we kept the deposit and interest rate as it
+was in the control group. Again, we ran this multiple times to calculate the mean rates. 
+
+We then did the above for the deposit (0.05, 0.10, 0.15, 0.25 and 0.30) and %CHECK CHANGES
+interest rate variables (2.6\%, 3.6\% and 5.6\%), only changing one variable at 
+a time and keeping the rest the same as per the control group.
 
 \section{Results}
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
 
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    Inequality at: & 0.40 &     0.50 &    0.55 (Control) & 0.60    &   0.65   & 0.70   &     0.75 &     1.0 \\ \hline
+    \% of Renters  & 40.899\% & 47.183\% & 53.593\%     & 49.882\%  & 51.805\% & 53.863\% &   50.577\%    & 49.325\% \\ \hline
+    \% of Owners   & 49.848\% & 40.722\%  & 35.172\%    & 36.184\%  & 30.558\% & 29.352\% &   30.192\%    & 23.904\%    \\ \hline
+    \% of Homeless  & 9.253\% & 12.095\% & 11.235\%     & 13.934\%  & 17.637\% & 16.785\% &   19.231\%    & 26.771\%    \\ \hline
+    \% of Mobility  & 18.328\% & 16.587\% & 17.570\%    & 16.958\%  & 21.026\% & 22.147\% &   21.849\%    & 23.099\%    \\ \hline
+\end{tabular}
+\caption{Household distribution under changing income inequality levels.}
+\label{tab:inequality}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Deposit at:     & 0.05        & 0.10         & 0.20 (Control)   & 0.30          & 0.40        \\ \hline
+    \% of Renters   & 50.337\%    & 53.214\%     & 53.593\%         & 45.336\%      & 52.733\%    \\ \hline
+    \% of Owners    & 35.501\%    & 33.544\%     & 35.172\%         & 39.980\%      & 34.194\%    \\ \hline
+    \% of Homeless  & 14.162\%    & 13.242\%     & 11.235\%         & 14.685\%      & 13.074\%    \\ \hline
+    \% of Mobility  & 17.135\%    & 17.327\%     & 17.570\%         & 16.207\%      & 20.232\%    \\ \hline
+\end{tabular}
+\caption{Household distribution under changing deposit requirements.}
+\label{tab:deposit}
+\end{table}
+
+
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Interest Rate at: & 0.1\%       & 0.2\%       & 4.6\% (Control)   & 6.0\%       & 10.0\% \\ \hline
+    \% of Renters     & 46.770\%    & 50.194\%    & 53.593\%          & 39.389\%    & 47.149\%  \\ \hline
+    \% of Owners      & 37.399\%    & 35.130\%    & 35.172\%          & 48.119\%    & 40.216\%   \\ \hline
+    \% of Homeless    & 15.832\%    & 14.676\%    & 11.235\%          & 12.492\%    & 12.635\%   \\ \hline
+    \% of Mobility    & 25.458\%    & 21.932\%    & 17.570\%          & 14.888\%    & 13.886\%  \\ \hline
+\end{tabular}
+\caption{Household distribution under changing interest rates.}
+\label{tab:interest_rates}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\resizebox{1\textwidth}{!}
+{
+    \includegraphics{figures/progress}
+}
+\caption{Household distribution over time}
+\label{fig:progress}
+\end{figure}
+
 \section{Discussion}
+\subsection{Findings} 
+\textbf{Inequality Index}: as the index increases in value (i.e. as the gap widens 
+between the rich and the poor), the rate of homelessness steadily increases, peaking at 26.771\%
+at an income inequality level of 1.0. In addition, the percentage of home owners 
+notably decreases, aligning with our initial expectations. Whilst the rate of renters 
+slightly fluctuates, mobility decreases as inequality is smaller than the control group and increases 
+as the inequality level is larger than the control, showing that early renters are still managing to
+enter the property market. 
+\\ %INEQUAL GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/income_inequality}
+}
+\caption{Household distribution when altering income inequality}
+\label{fig:income_inequality}
+\end{figure}
+
+\textbf{Deposit Amount}: as the deposit amount increases, it hypothetically becomes harder to obtain
+a mortgage due to the additional savings required. Interestingly, home ownership rates do not uniformly decline,
+hovering around the ~35\% mark. Homelessness rates also remain steady, not showing any major changes
+as the deposit amount required for a loan increases. However, the rate of renters stays consistantly
+high, representing approximately 50\% of the households in the simulation. In addition, the extra cost doesn't 
+deter renters from entering the property market, as when deposit = 0.4, mobility peaks at 20.232\%. 
+\\ %DEPO GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/deposit}
+}
+\caption{Household distribution when altering deposit requirements}
+\label{fig:deposit}
+\end{figure}
+
+
+\textbf{Interest Rates}: as the interest rate increased, we initially predicted 
+that renters and homelessness would increase whilst the amount of home owners 
+decreases, as mortgage repayments would have become more expensive.
+However, the results show nearly the opposite, with the percentage of home owners 
+actually increasing as the rates rise (reaching a high of 48.119\% when rates are 6.0\%), 
+On the other hand, the percentage of renters drops to 39.389\% at the same level. Homelessness
+is actually the highest when the interest rate is at its lowest (15.832\% when rates are 0.1\%) 
+which we did not predict. However, mobility shows a consistent decline as rates rise, falling 
+from 25.458\% to 13.886\%, which is more in line with what we expected.
+\\ %RATE GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/interest}
+}
+\caption{Household distribution when altering interest rates}
+\label{fig:interest}
+\end{figure}
+
+
+
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
 % - Identifies limitations, uncertainty and potential improvements or applications without overstating the model’s scope
 
-% - limitation idea, we used a lognormal distrib when irl its more right skewed??
-% - also we only update the interest rate each year, normally done quarterly??
-% - typically formula is used for monthly payments - could have a different effect
-% - only houses, not accounting for units which are cheaper upfront
-% - when changing deposit to 5%, model doesn't include lenderes mortgage insurance, which would be an added cost
+
+\subsection{Limitations}
+Our model has many limitations. Some of them include:
+\begin{itemize}
+  \item The formula used to update the interest rate occurs yearly in our model, 
+  whereas in reality it can be updated potentially up to 8 times a year based upon
+  the RBA cash rate board meetings, with the rates being increased four times so far
+  in 2026 \cite{canstarrates}. 
+  % This could either increase or decrease the interest
+  % accrued on ones remaining balance which is not reflected in our model.
+  \item Our formula to calculate mortgage payments is based on interest compounding
+  yearly, and households also making one annual payment. In reality, most interest
+  rates compound monthly with households making monthly or fortnightly payments.
+  % Therfore our model underestimates the total interest accrued over time
+  % through more frequent compounding, which means in reality, the same households 
+  % would have more interest to pay off on their loans.
+  \item In our simulation, we only have one dwelling type (houses). In reality,
+  there are many different dwelling types, such as apartments, townhouses, and
+  duplexes.
+  % which could have lower upfront costs and extra fees (such as strata fees), 
+  % that our model doesn't account for. 
+  % Therefore our model could be underestimating the amount of homeowners due 
+  % to these exclusions. 
+  \item Lower deposit amounts are typically saved for first home buyers, which
+  our model doesn't track.
+  
+  % In our model, we've changed the deposit amount required to 2\% of the house
+  % price to simulate government home buying programs such as Keystart, and seeing if 
+  % that helps increase the rate of homeowners. However, these programs are 
+  % typically for first home buyers, which our model doesn't account for. 
+  % Therfore 
+  % a lot of investors in our model also benefitted from the 2\% deposit, 
+  % exacerbating the gap between renters and buyers, which is not accurate to the 
+  % reality of the situation.
+  \item In addition, when a household takes out a loan 
+  with less than 20\% deposit saved, they also normally have to pay for Lenders
+  Mortgage Insurance (LMI)\cite{canstarlmi}, which isn't included in our model.
+  % LMI is an additional cost that borrowers
+  % either have to pay up front, or add into the loan, but regardless, it is an
+  % added expense that our model doesn't account for. 
+  % that could have affected the 
+  % ratio of homeowners to renters. 
+  \item Our model only considers standard mortgages from banks, and does not consider
+  other loans such as having a guarantor, or having another household buy a house
+  for you (such as the 'Bank of Mum and Dad'). 
+  \item Our model does not take into account factors such as comparing
+  different banks for loans, building inspections, settlement and stamp duty costs, and
+  home insurance to name a few \cite{moneysmartbuying}. 
+  % These additional factors have added costs for households
+  % and can impact their ability to make payments, resulting in our model overestimating
+  % the amount of homeowners\cite{moneysmartbuying}. 
+\end{itemize}
 
 \section{Conclusion}
-% same as Discussion
+Based on our model's findings, we can address the hypothesis by evaluating how 
+each factor influences home ownership and housing instability in Perth.
+\\
+The results indicate that income inequality has the largest impact on housing acccessibility. When
+the income inequality gap is widened, it makes it harder for households to find 
+houses in their price range and afford loan repayments, therfore resulting in lower 
+ownership and higher renter and homelessness rates. 
+\\
+Deposit requirements had a less predictable effect than anticipated. Rather than
+falling as larger deposits were required, home ownership rates only slightly varied randomly, 
+suggesting that households had possible adjusting their savings when faced with more costs
+to enter the housing market.
+\\
+Interest rates displayed contradictory results to what we predicted, with home ownership rates
+increasing alongside the rates. This suggests that interest rates in isolation play a less dominant role in determining
+housing instability in our model. However, there is also the possibility that there was an unknown error
+in our model which caused this result. 
+\\
 
-\section{Future work}
+In conclusion, based on our model's findings, income inequality has the most impact on Perth's housing
+market. In order to help bridge the gap, governmental interventions should focus on reducing 
+wealth disparity and easing upfront cost barriers, with a targeted focus on helping 
+low-socioeconomic households. 
+%again i dont like the wording on the last part, but i'm vv eepy.
 
 % \subsubsection{Credit statement}
 % \emph{Pudney}: Core + solver backend implementation, benchmarking and survey design and implementation, document preparation. \emph{Grinbergs}: loss backend implementation, documentation preparation. \emph{Daggitt}: Conceptualisation, ITP backend and documentation preparation.
