@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Any
-from constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, COST_OF_LIVING, QUALITY_PRICE_INFLUENCE
+from housingSimulator.src.constants import AVERAGE_RENT, AVERAGE_HOUSE_PRICE, AVERAGE_INCOME, MAX_QUALITY_POINTS, BASE_INTEREST_RATE, LOAN_PERIOD, COST_OF_LIVING, QUALITY_PRICE_INFLUENCE
 import itertools
 _ids = itertools.count()
 # Class for houses.

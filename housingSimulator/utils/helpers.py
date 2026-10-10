@@ -1,5 +1,5 @@
-from classes import Dwelling, Household, Mortgage, Bank
-from constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, AVERAGE_RENT
+from housingSimulator.src.classes import Dwelling, Household, Mortgage, Bank
+from housingSimulator.src.constants import DEPOSIT, BASE_INTEREST_RATE, PROFIT_MARGIN, AVERAGE_RENT
 import random
 
 

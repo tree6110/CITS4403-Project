@@ -1,5 +1,5 @@
 from PIL import Image
-from constants import GRID_DIM
+from housingSimulator.src.constants import GRID_DIM
 # Constants that it seems weird to move into constants file.
 WATER_COLOUR = (181, 208, 208)
 
