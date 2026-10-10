@@ -250,11 +250,11 @@ def graphSimulation(
         f.plot(historicalAvgHousePrice, color="red")
         f.plot(historicalAvgHouseListings, color="red")
 
-        plt.savefig(f"./step{i}")
+        plt.savefig(f"./results/step{i}")
        
 
 def main() -> None:
-    steps = runSimulation(1)
+    steps = runSimulation(20)
     graphSimulation(steps)
 
 
