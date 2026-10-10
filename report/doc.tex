@@ -1,5 +1,7 @@
 \documentclass[11pt]{article}
 
+\usepackage{graphicx}
+\usepackage{float}
 \usepackage[margin=1in]{geometry}
 % TODO: 1 inch margins as required by project spec.
 \newgeometry{vmargin={15mm}, hmargin={17mm, 17mm}}
@@ -239,8 +241,9 @@ a time and keeping the rest the same as per the control group.
 % - Reports relevant qualitative and quantitative findings accurately and provides sufficient evidence of model behaviour under the investigated conditions.
 % - Uses well-chosen figures and tables with informative captions, labels and units where applicable.
 
-Changing the inequality index (keeping the other variables constant):
-\\
+
+\begin{table}[!ht]
+\centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
     \hline
     Inequality at: & 0.40 &     0.50 &    0.55 (Control) & 0.60    &   0.65   & 0.70   &     0.75 &     1.0 \\ \hline
@@ -249,10 +252,12 @@ Changing the inequality index (keeping the other variables constant):
     \% of Homeless  & 9.253\% & 12.095\% & 11.235\%     & 13.934\%  & 17.637\% & 16.785\% &   19.231\%    & 26.771\%    \\ \hline
     \% of Mobility  & 18.328\% & 16.587\% & 17.570\%    & 16.958\%  & 21.026\% & 22.147\% &   21.849\%    & 23.099\%    \\ \hline
 \end{tabular}
-\\
+\caption{Household distribution under changing income inequality levels.}
+\label{tab:inequality}
+\end{table}
 
-Changing the deposit amount required (keeping the other variables constant):
-\\
+\begin{table}[!ht]
+\centering
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     Deposit at:     & 0.05        & 0.10         & 0.20 (Control)   & 0.30          & 0.40        \\ \hline
@@ -261,10 +266,14 @@ Changing the deposit amount required (keeping the other variables constant):
     \% of Homeless  & 14.162\%    & 13.242\%     & 11.235\%         & 14.685\%      & 13.074\%    \\ \hline
     \% of Mobility  & 17.135\%    & 17.327\%     & 17.570\%         & 16.207\%      & 20.232\%    \\ \hline
 \end{tabular}
-\\
+\caption{Household distribution under changing deposit requirements.}
+\label{tab:deposit}
+\end{table}
 
-Changing the interest rate (keeping the other variables constant):
-\\
+
+
+\begin{table}[!ht]
+\centering
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     Interest Rate at: & 0.1\%       & 0.2\%       & 4.6\% (Control)   & 6.0\%       & 10.0\% \\ \hline
@@ -273,10 +282,22 @@ Changing the interest rate (keeping the other variables constant):
     \% of Homeless    & 15.832\%    & 14.676\%    & 11.235\%          & 12.492\%    & 12.635\%   \\ \hline
     \% of Mobility    & 25.458\%    & 21.932\%    & 17.570\%          & 14.888\%    & 13.886\%  \\ \hline
 \end{tabular}
-\\
+\caption{Household distribution under changing interest rates.}
+\label{tab:interest_rates}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\resizebox{1\textwidth}{!}
+{
+    \includegraphics{figures/progress}
+}
+\caption{Household distribution over time}
+\label{fig:progress}
+\end{figure}
 
 \section{Discussion}
-\subsection{Findings} %CHECK CHANGES
+\subsection{Findings} 
 \textbf{Inequality Index}: as the index increases in value (i.e. as the gap widens 
 between the rich and the poor), the rate of homelessness steadily increases, peaking at 26.771\%
 at an income inequality level of 1.0. In addition, the percentage of home owners 
@@ -284,7 +305,16 @@ notably decreases, aligning with our initial expectations. Whilst the rate of re
 slightly fluctuates, mobility decreases as inequality is smaller than the control group and increases 
 as the inequality level is larger than the control, showing that early renters are still managing to
 enter the property market. 
-\\
+\\ %INEQUAL GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/income_inequality}
+}
+\caption{Household distribution when altering income inequality}
+\label{fig:income_inequality}
+\end{figure}
 
 \textbf{Deposit Amount}: as the deposit amount increases, it hypothetically becomes harder to obtain
 a mortgage due to the additional savings required. Interestingly, home ownership rates do not uniformly decline,
@@ -292,7 +322,17 @@ hovering around the ~35\% mark. Homelessness rates also remain steady, not showi
 as the deposit amount required for a loan increases. However, the rate of renters stays consistantly
 high, representing approximately 50\% of the households in the simulation. In addition, the extra cost doesn't 
 deter renters from entering the property market, as when deposit = 0.4, mobility peaks at 20.232\%. 
-\\
+\\ %DEPO GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/deposit}
+}
+\caption{Household distribution when altering deposit requirements}
+\label{fig:deposit}
+\end{figure}
+
 
 \textbf{Interest Rates}: as the interest rate increased, we initially predicted 
 that renters and homelessness would increase whilst the amount of home owners 
@@ -303,7 +343,18 @@ On the other hand, the percentage of renters drops to 39.389\% at the same level
 is actually the highest when the interest rate is at its lowest (15.832\% when rates are 0.1\%) 
 which we did not predict. However, mobility shows a consistent decline as rates rise, falling 
 from 25.458\% to 13.886\%, which is more in line with what we expected.
-\\
+\\ %RATE GRAPH
+\begin{figure}[H]
+\centering
+\resizebox{0.65\textwidth}{!}
+{
+    \includegraphics{figures/interest}
+}
+\caption{Household distribution when altering interest rates}
+\label{fig:interest}
+\end{figure}
+
+
 
 % - Interprets findings in relation to the research question, rather than merely repeating the results.
 % - Draws evidence-supported conclusions and explains the insights gained about the system.
@@ -362,7 +413,7 @@ Our model has many limitations. Some of them include:
   % the amount of homeowners\cite{moneysmartbuying}. 
 \end{itemize}
 
-\section{Conclusion}%CHECK CHANGES
+\section{Conclusion}
 Based on our model's findings, we can address the hypothesis by evaluating how 
 each factor influences home ownership and housing instability in Perth.
 \\
